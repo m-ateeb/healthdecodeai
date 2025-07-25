@@ -26,8 +26,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Navigation } from '@/components/Navigation';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
 
-export default function Dashboard() {
+function DashboardContent() {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
 
   const healthStats = [
@@ -194,35 +197,35 @@ export default function Dashboard() {
       
       {/* Header Section */}
       <div className="relative overflow-hidden">
-        {/* Floating elements */}
-        <div className="absolute top-20 left-10 animate-float">
+        {/* Floating elements - hidden on mobile for better performance */}
+        <div className="hidden sm:block absolute top-20 left-10 animate-float">
           <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-10"></div>
         </div>
-        <div className="absolute top-40 right-20 animate-float" style={{animationDelay: '2s'}}>
+        <div className="hidden sm:block absolute top-40 right-20 animate-float" style={{animationDelay: '2s'}}>
           <Sparkles className="w-6 h-6 text-yellow-400 opacity-30" />
         </div>
         
-        <div className="container mx-auto px-4 pt-24 pb-8">
+        <div className="container mx-auto px-4 sm:px-6 pt-24 pb-8">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 animate-fade-in">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
                 Welcome back! 👋
               </h1>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-base sm:text-lg text-muted-foreground">
                 Here&apos;s your health overview for today
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search reports, medications..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-64 border-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur"
+                  className="pl-10 w-full sm:w-64 border-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur"
                 />
               </div>
-              <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white">
+              <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 New Upload
               </Button>
@@ -231,9 +234,9 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 pb-8">
+      <div className="container mx-auto px-4 sm:px-6 pb-8">
         {/* Health Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
           {healthStats.map((stat, index) => (
             <Card 
               key={index} 
@@ -262,17 +265,17 @@ export default function Dashboard() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Recent Reports */}
           <div className="lg:col-span-2">
             <Card className="glass-effect border-0 shadow-xl animate-slide-up">
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <CardTitle className="text-xl font-semibold">Recent Reports</CardTitle>
                     <CardDescription>Latest medical document analysis</CardDescription>
                   </div>
-                  <Button variant="outline" size="sm" className="hover:bg-blue-50 dark:hover:bg-blue-950">
+                  <Button variant="outline" size="sm" className="hover:bg-blue-50 dark:hover:bg-blue-950 w-full sm:w-auto">
                     View All
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
@@ -285,21 +288,23 @@ export default function Dashboard() {
                       key={report.id} 
                       className={`p-4 rounded-xl border-l-4 bg-white/50 dark:bg-gray-800/50 hover:shadow-md transition-all duration-200 ${getPriorityColor(report.priority)}`}
                     >
-                      <div className="flex items-start justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                         <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
                             <h4 className="font-semibold">{report.title}</h4>
-                            <Badge className={getStatusColor(report.status)} variant="secondary">
-                              {report.status}
-                            </Badge>
-                            {report.confidence && (
-                              <Badge variant="outline" className="text-xs">
-                                {report.confidence}% confidence
+                            <div className="flex gap-2">
+                              <Badge className={getStatusColor(report.status)} variant="secondary">
+                                {report.status}
                               </Badge>
-                            )}
+                              {report.confidence && (
+                                <Badge variant="outline" className="text-xs">
+                                  {report.confidence}% confidence
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                           <p className="text-sm text-muted-foreground mb-2">{report.summary}</p>
-                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
                               {report.date}
@@ -310,7 +315,7 @@ export default function Dashboard() {
                             </span>
                           </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 self-start">
                           <Button size="sm" variant="ghost">
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -334,18 +339,18 @@ export default function Dashboard() {
                 <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
                   {quickActions.map((action, index) => (
                     <Button
                       key={index}
                       variant="outline"
-                      className="h-auto p-4 flex flex-col items-center gap-2 hover:shadow-md transition-all duration-200"
+                      className="h-auto p-3 sm:p-4 flex flex-col items-center gap-2 hover:shadow-md transition-all duration-200"
                     >
                       <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${action.color} flex items-center justify-center`}>
                         <action.icon className="w-4 h-4 text-white" />
                       </div>
                       <div className="text-center">
-                        <p className="text-xs font-medium">{action.title}</p>
+                        <p className="text-xs font-medium leading-tight">{action.title}</p>
                       </div>
                     </Button>
                   ))}
@@ -367,18 +372,20 @@ export default function Dashboard() {
                 <div className="space-y-3">
                   {medications.map((med, index) => (
                     <div key={index} className="p-3 rounded-lg bg-white/50 dark:bg-gray-800/50">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                        <div className="flex-1">
                           <h4 className="font-medium text-sm">{med.name}</h4>
                           <p className="text-xs text-muted-foreground">{med.dosage} • {med.frequency}</p>
                         </div>
-                        {med.interactions > 0 && (
-                          <Badge variant="destructive" className="text-xs">
-                            {med.interactions} interaction
-                          </Badge>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {med.interactions > 0 && (
+                            <Badge variant="destructive" className="text-xs">
+                              {med.interactions} interaction
+                            </Badge>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center justify-between text-xs mt-2">
                         <span className="text-muted-foreground">Next: {med.nextDose}</span>
                         <Badge variant="outline" className="text-xs">
                           {med.status}
@@ -623,5 +630,13 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <ProtectedRoute>
+      <DashboardContent />
+    </ProtectedRoute>
   );
 }

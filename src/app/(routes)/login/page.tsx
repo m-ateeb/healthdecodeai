@@ -1,19 +1,54 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, Mail, Lock, Heart, Brain } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Heart, Brain, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Login() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const redirectTo = searchParams.get('redirect') || '/dashboard';
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const success = await login(email, password);
+      if (success) {
+        router.push(redirectTo);
+      } else {
+        setError('Invalid email or password');
+      }
+    } catch (error) {
+      setError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
@@ -46,7 +81,14 @@ export default function Login() {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            <div className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">
                   Email Address
@@ -93,7 +135,6 @@ export default function Login() {
                   </Button>
                 </div>
               </div>
-            </div>
 
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center space-x-2 cursor-pointer">
@@ -105,9 +146,14 @@ export default function Login() {
               </Link>
             </div>
 
-            <Button className="w-full h-12 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105">
-              Sign In
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              className="w-full h-12 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Signing In..." : "Sign In"}
             </Button>
+            </form>
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -138,7 +184,7 @@ export default function Login() {
 
             <div className="text-center text-sm">
               <span className="text-gray-600 dark:text-gray-300">Don&apos;t have an account? </span>
-              <Link href="/register" className="text-blue-600 hover:text-blue-500 font-medium">
+              <Link href="/signup" className="text-blue-600 hover:text-blue-500 font-medium">
                 Sign up
               </Link>
             </div>

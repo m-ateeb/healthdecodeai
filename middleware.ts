@@ -1,7 +1,51 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { verifyToken } from '@/lib/auth';
+
+// Define protected routes
+const protectedRoutes = ['/dashboard', '/chat', '/profile', '/settings'];
+const authRoutes = ['/login', '/signup'];
 
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const token = request.cookies.get('token')?.value;
+
+  // Check if the route is protected
+  const isProtectedRoute = protectedRoutes.some(route => 
+    pathname.startsWith(route)
+  );
+
+  // Check if the route is an auth route (login/signup)
+  const isAuthRoute = authRoutes.some(route => 
+    pathname.startsWith(route)
+  );
+
+  // If it's a protected route and no token, redirect to login
+  if (isProtectedRoute && !token) {
+    const url = new URL('/login', request.url);
+    url.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(url);
+  }
+
+  // If it's a protected route, verify the token
+  if (isProtectedRoute && token) {
+    const user = verifyToken(token);
+    if (!user) {
+      // Token is invalid, clear it and redirect to login
+      const response = NextResponse.redirect(new URL('/login', request.url));
+      response.cookies.delete('token');
+      return response;
+    }
+  }
+
+  // If user is authenticated and trying to access auth routes, redirect to dashboard
+  if (isAuthRoute && token) {
+    const user = verifyToken(token);
+    if (user) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+  }
+
   // Clone the request url
   const url = request.nextUrl.clone();
   
@@ -33,7 +77,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - public folder
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|public/).*)',
   ],
 };

@@ -2,18 +2,25 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, Mail, Lock, User, Heart, Brain, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Heart, Brain, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Register() {
+  const router = useRouter();
+  const { signup } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -33,6 +40,43 @@ export default function Register() {
 
   const updateFormData = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    
+    // Validate form
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+      setError('Please fill in all fields');
+      return;
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    
+    if (passwordRequirements.some(req => !req.met)) {
+      setError('Password does not meet all requirements');
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      const success = await signup(formData.firstName, formData.lastName, formData.email, formData.password);
+      
+      if (success) {
+        router.push('/dashboard');
+      } else {
+        setError('Registration failed. Please try again.');
+      }
+    } catch (error) {
+      setError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -66,7 +110,14 @@ export default function Register() {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            <div className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label htmlFor="firstName" className="text-sm font-medium">
@@ -206,7 +257,6 @@ export default function Register() {
                   <p className="text-xs text-red-500">Passwords do not match</p>
                 )}
               </div>
-            </div>
 
             <div className="space-y-4">
               <label className="flex items-start space-x-3 cursor-pointer">
@@ -231,9 +281,14 @@ export default function Register() {
               </label>
             </div>
 
-            <Button className="w-full h-12 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105">
-              Create Account
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              className="w-full h-12 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
+            </form>
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">

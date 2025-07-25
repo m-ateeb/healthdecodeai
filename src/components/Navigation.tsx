@@ -4,23 +4,34 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Heart, Brain } from 'lucide-react';
+import { Menu, X, Heart, Brain, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { user, logout, isLoading } = useAuth();
 
   const isActive = (path: string) => pathname === path;
 
-  const navItems = [
+  const publicNavItems = [
     { href: '/', label: 'Home' },
     { href: '/features', label: 'Features' },
     { href: '/about', label: 'About' },
     // { href: '/services', label: 'Services' },
     { href: '/contact', label: 'Contact' },
   ];
+
+  const authenticatedNavItems = [
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/chat', label: 'AI Chat' },
+    { href: '/about', label: 'About' },
+    { href: '/contact', label: 'Contact' },
+  ];
+
+  const navItems = user ? authenticatedNavItems : publicNavItems;
 
   return (
     <nav className="fixed top-0 w-full z-50 glass-effect border-b">
@@ -57,16 +68,42 @@ export function Navigation() {
 
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
-            <Link href="/login">
-              <Button variant="ghost" size="sm">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button size="sm" className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
-                Get Started
-              </Button>
-            </Link>
+            {!isLoading && (
+              <>
+                {user ? (
+                  <>
+                    <Link href="/dashboard">
+                      <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                        <User className="h-4 w-4" />
+                        <span>{user.firstName || user.name}</span>
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={logout}
+                      className="flex items-center space-x-2"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>Sign Out</span>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/login">
+                      <Button variant="ghost" size="sm">
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link href="/signup">
+                      <Button size="sm" className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -103,16 +140,44 @@ export function Navigation() {
               </Link>
             ))}
             <div className="pt-4 mb-10 space-y-2">
-              <Link href="/login" onClick={() => setIsOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start">
-                  Sign In
-                </Button>
-              </Link>
-              <Link href="/register" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
-                  Get Started
-                </Button>
-              </Link>
+              {!isLoading && (
+                <>
+                  {user ? (
+                    <>
+                      <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                        <Button variant="ghost" className="w-full justify-start">
+                          <User className="h-4 w-4 mr-2" />
+                          {user.firstName || user.name}
+                        </Button>
+                      </Link>
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start" 
+                        onClick={() => {
+                          logout();
+                          setIsOpen(false);
+                        }}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/login" onClick={() => setIsOpen(false)}>
+                        <Button variant="ghost" className="w-full justify-start">
+                          Sign In
+                        </Button>
+                      </Link>
+                      <Link href="/signup" onClick={() => setIsOpen(false)}>
+                        <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
+                          Get Started
+                        </Button>
+                      </Link>
+                    </>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

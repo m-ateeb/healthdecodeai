@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Navigation } from '@/components/Navigation';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 interface Message {
   id: number;
@@ -17,7 +18,7 @@ interface Message {
   type?: 'text' | 'file' | 'analysis';
 }
 
-export default function ChatInterface() {
+function ChatInterfaceContent() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -222,5 +223,13 @@ export default function ChatInterface() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ChatInterface() {
+  return (
+    <ProtectedRoute>
+      <ChatInterfaceContent />
+    </ProtectedRoute>
   );
 }
