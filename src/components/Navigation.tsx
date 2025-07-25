@@ -62,7 +62,7 @@ export function Navigation() {
                 Sign In
               </Button>
             </Link>
-            <Link href="/register">
+            <Link href="/signup">
               <Button size="sm" className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
                 Get Started
               </Button>
