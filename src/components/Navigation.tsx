@@ -18,7 +18,7 @@ export function Navigation() {
     { href: '/', label: 'Home' },
     { href: '/features', label: 'Features' },
     { href: '/about', label: 'About' },
-    { href: '/services', label: 'Services' },
+    // { href: '/services', label: 'Services' },
     { href: '/contact', label: 'Contact' },
   ];
 
@@ -102,7 +102,7 @@ export function Navigation() {
                 {item.label}
               </Link>
             ))}
-            <div className="pt-4 space-y-2">
+            <div className="pt-4 mb-10 space-y-2">
               <Link href="/login" onClick={() => setIsOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start">
                   Sign In

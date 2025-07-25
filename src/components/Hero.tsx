@@ -1,26 +1,27 @@
 
 import { ArrowRight, Upload, Shield, Brain, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
 export function Hero() {
   return (
-    <div className="mt-16 relative min-h-screen flex items-center justify-center overflow-hidden">
+    <div className="mt-16 relative py-20 lg:py-32 flex items-center justify-center overflow-hidden">
       {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-indigo-900">
         <div className="absolute inset-0 opacity-30" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='30'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
         }}></div>
       </div>
 
       {/* Floating elements */}
-      <div className="absolute top-20 left-10 animate-float">
+      <div className="absolute top-10 left-10 animate-float">
         <div className="w-20 h-20 bg-blue-200 rounded-full opacity-20 dark:bg-blue-800"></div>
       </div>
-      <div className="absolute top-40 right-20 animate-float" style={{animationDelay: '2s'}}>
+      <div className="absolute top-32 right-20 animate-float" style={{animationDelay: '2s'}}>
         <div className="w-16 h-16 bg-green-200 rounded-full opacity-20 dark:bg-green-800"></div>
       </div>
-      <div className="absolute bottom-40 left-20 animate-float" style={{animationDelay: '4s'}}>
+      <div className="absolute bottom-20 left-20 animate-float" style={{animationDelay: '4s'}}>
         <div className="w-12 h-12 bg-purple-200 rounded-full opacity-20 dark:bg-purple-800"></div>
       </div>
 
@@ -55,35 +56,14 @@ export function Hero() {
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto animate-scale-in" style={{animationDelay: '0.6s'}}>
-            <div className="flex flex-col items-center p-6 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 hover:scale-105 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4">
-                <Upload className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Smart Report Analysis</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-center">Upload medical documents and get instant, easy-to-understand explanations</p>
-            </div>
-            
-            <div className="flex flex-col items-center p-6 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 hover:scale-105 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-4">
-                <Shield className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Medication Safety</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-center">Check drug interactions and get personalized safety recommendations</p>
-            </div>
-            
-            <div className="flex flex-col items-center p-6 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 hover:scale-105 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-4">
-                <Brain className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">AI-Powered Insights</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-center">Get intelligent health insights tailored to your unique medical history</p>
-            </div>
-          </div>
+          
         </div>
-        
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ChevronDown className="h-6 w-6 text-gray-400" />
+      </div>
+
+      {/* ChevronDown at the bottom, outside main content to avoid overlap */}
+      <div className="absolute inset-x-0 bottom-8 flex justify-center z-20 pointer-events-none">
+        <div className="animate-bounce">
+          <ChevronDown className="h-8 w-8 text-gray-400" />
         </div>
       </div>
     </div>

@@ -49,7 +49,7 @@ export function FeaturesSection() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-blue-50/50 to-green-50/50 dark:from-gray-900/50 dark:to-gray-800/50">
+    <section className="py-20 bg-gradient-to-b from-green-50/60 via-emerald-50/40 to-teal-50/60 dark:from-gray-800/60 dark:via-green-950/40 dark:to-emerald-950/60">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">

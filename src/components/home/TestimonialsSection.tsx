@@ -32,7 +32,7 @@ export function TestimonialsSection() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-50/50 to-blue-50/50 dark:from-gray-900/50 dark:to-gray-800/50">
+    <section className="py-20 bg-gradient-to-b from-purple-50/60 via-pink-50/40 to-rose-50/60 dark:from-purple-950/60 dark:via-pink-950/40 dark:to-rose-950/60">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">

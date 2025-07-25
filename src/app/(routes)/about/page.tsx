@@ -142,7 +142,7 @@ const About = () => {
             </Badge>
             <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold mb-6 animate-slide-up">
               Transforming Healthcare
-              <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">
+              <span className="py-5 block bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">
                 Through AI Innovation
               </span>
             </h1>
