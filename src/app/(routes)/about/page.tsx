@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Navigation } from '@/components/Navigation';
 import { Award, Users, Globe, Heart, Target, Lightbulb, Shield, Zap, CheckCircle, Star, ArrowRight, Milestone } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const About = () => {
   const values = [
@@ -146,7 +147,7 @@ const About = () => {
               </span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              We're on a mission to make quality healthcare accessible to everyone through the power of artificial intelligence and human compassion.
+              We&apos;re on a mission to make quality healthcare accessible to everyone through the power of artificial intelligence and human compassion.
             </p>
           </div>
         </div>
@@ -161,7 +162,7 @@ const About = () => {
                 Our Mission
               </h2>
               <p className="text-lg text-muted-foreground mb-6">
-                HealthDecodeAI was founded on the belief that everyone deserves access to quality healthcare, regardless of their location or circumstances. We're leveraging cutting-edge artificial intelligence to break down barriers and create a world where healthcare is truly universal.
+                HealthDecodeAI was founded on the belief that everyone deserves access to quality healthcare, regardless of their location or circumstances. We&apos;re leveraging cutting-edge artificial intelligence to break down barriers and create a world where healthcare is truly universal.
               </p>
               <p className="text-lg text-muted-foreground mb-8">
                 Our team of world-class physicians, AI researchers, and healthcare experts work tirelessly to develop solutions that not only advance medical science but also improve real patient outcomes every day.
@@ -181,10 +182,12 @@ const About = () => {
               </div>
             </div>
             <div className="relative animate-scale-in glass-effect rounded-2xl p-6" style={{ animationDelay: '0.2s' }}>
-              <img 
-                src={`https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&h=400&fit=crop`}
+              <Image 
+                src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&h=400&fit=crop"
                 alt="Modern healthcare technology and AI innovation"
                 className="rounded-xl shadow-2xl w-full h-[400px] object-cover"
+                width={600}
+                height={400}
               />
               <div className="absolute inset-6 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
               
@@ -346,7 +349,7 @@ const About = () => {
               Meet Our Team
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              The brilliant minds behind HealthDecodeAI's innovation
+              The brilliant minds behind HealthDecodeAI&apos;s innovation
             </p>
           </div>
           
@@ -358,10 +361,12 @@ const About = () => {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="relative">
-                  <img 
+                  <Image 
                     src={`https://images.unsplash.com/${member.image}?w=300&h=300&fit=crop&crop=face`}
                     alt={member.name}
                     className="w-full h-40 md:h-48 object-cover"
+                    width={300}
+                    height={300}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                   

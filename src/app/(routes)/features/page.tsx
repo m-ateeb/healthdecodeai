@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Navigation } from '@/components/Navigation';
 import { Brain, Heart, Shield, Zap, Users, Clock, Star, CheckCircle, ArrowRight, Sparkles, TrendingUp, Award } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Features = () => {
   const mainFeatures = [
@@ -84,7 +85,7 @@ const Features = () => {
     {
       name: "Dr. Lisa Thompson",
       role: "Family Medicine",
-      quote: "My patients love the personalized health plans. It's made preventive care more engaging and effective than ever before.",
+      quote: "My patients love the personalized health plans. It&apos;s made preventive care more engaging and effective than ever before.",
       image: "photo-1594824388607-359a9d17ad2f",
       rating: 5
     }
@@ -227,10 +228,12 @@ const Features = () => {
               >
                 <CardHeader>
                   <div className="flex items-center gap-4 mb-4">
-                    <img 
+                    <Image 
                       src={`https://images.unsplash.com/${testimonial.image}?w=80&h=80&fit=crop&crop=face`}
                       alt={testimonial.name}
                       className="w-12 h-12 rounded-full object-cover"
+                      width={48}
+                      height={48}
                     />
                     <div>
                       <h4 className="font-semibold">{testimonial.name}</h4>
@@ -244,7 +247,7 @@ const Features = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground italic">"{testimonial.quote}"</p>
+                  <p className="text-muted-foreground italic">&quot;{testimonial.quote}&quot;</p>
                 </CardContent>
               </Card>
             ))}

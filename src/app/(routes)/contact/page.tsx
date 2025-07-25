@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Navigation } from '@/components/Navigation';
-import { MapPin, Phone, Mail, Clock, MessageCircle, Video, Calendar, HelpCircle, ArrowRight, Send, CheckCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, MessageCircle, Video, HelpCircle, Send } from 'lucide-react';
 import { useState } from 'react';
-import Link from 'next/link';
+import Image from 'next/image';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -142,7 +142,7 @@ const Contact = () => {
               💬 Get In Touch
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-slide-up">
-              We're Here to
+              We&apos;re Here to
               <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">
                 Help You Succeed
               </span>
@@ -204,7 +204,7 @@ const Contact = () => {
                     Send Us a Message
                   </CardTitle>
                   <p className="text-muted-foreground text-center">
-                    Fill out the form below and we'll get back to you within 2 hours
+                    Fill out the form below and we&apos;ll get back to you within 2 hours
                   </p>
                 </CardHeader>
                 <CardContent>
@@ -281,10 +281,12 @@ const Contact = () => {
                   >
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
-                        <img 
+                        <Image 
                           src={`https://images.unsplash.com/${office.image}?w=80&h=80&fit=crop`}
                           alt={office.city}
                           className="w-16 h-16 rounded-lg object-cover"
+                          width={64}
+                          height={64}
                         />
                         <div className="flex-1">
                           <h4 className="text-lg font-semibold mb-2">{office.city}</h4>

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Navigation } from '@/components/Navigation';
-import { Stethoscope, Brain, Heart, Shield, Users, Clock, Phone, Video, MessageCircle, FileText, Activity, Calendar, ArrowRight, CheckCircle } from 'lucide-react';
+import { Brain, Heart, Shield, Users, Clock, Phone, Video, MessageCircle, FileText, Activity, Calendar, ArrowRight, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const Services = () => {

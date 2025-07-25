@@ -1,6 +1,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Star } from 'lucide-react';
+import Image from 'next/image';
 
 export function TestimonialsSection() {
   const testimonials = [
@@ -51,10 +52,12 @@ export function TestimonialsSection() {
             >
               <CardContent className="p-6">
                 <div className="flex items-center mb-4">
-                  <img 
+                  <Image 
                     src={`https://images.unsplash.com/${testimonial.image}?w=60&h=60&fit=crop&crop=face`}
                     alt={testimonial.name}
                     className="w-12 h-12 rounded-full mr-4 object-cover ring-2 ring-white/20 shadow-lg"
+                    width={48}
+                    height={48}
                   />
                   <div>
                     <div className="font-semibold text-gray-900 dark:text-gray-100">{testimonial.name}</div>
@@ -66,7 +69,7 @@ export function TestimonialsSection() {
                     <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 italic">"{testimonial.content}"</p>
+                <p className="text-gray-700 dark:text-gray-300 italic">&quot;{testimonial.content}&quot;</p>
               </CardContent>
             </Card>
           ))}

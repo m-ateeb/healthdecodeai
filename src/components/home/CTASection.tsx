@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function CTASection() {
   const benefits = [
@@ -27,10 +28,12 @@ export function CTASection() {
           
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="animate-slide-up">
-              <img 
+              <Image 
                 src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500&h=400&fit=crop"
-                alt="Healthcare professional using HealthWise AI"
+                alt="Healthcare professional using HealthDecodeAI"
                 className="rounded-lg shadow-lg w-full h-[300px] object-cover"
+                width={500}
+                height={300}
               />
             </div>
             

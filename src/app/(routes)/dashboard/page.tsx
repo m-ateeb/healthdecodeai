@@ -14,13 +14,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  Users,
-  Activity,
   Heart,
-  Zap,
-  Award,
-  BarChart3,
-  PieChart,
   ArrowRight,
   Download,
   Eye,
@@ -31,9 +25,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Navigation } from '@/components/Navigation';
-import Link from 'next/link';
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -217,7 +209,7 @@ export default function Dashboard() {
                 Welcome back! 👋
               </h1>
               <p className="text-lg text-muted-foreground">
-                Here's your health overview for today
+                Here&apos;s your health overview for today
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -403,7 +395,7 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
                   <Star className="h-5 w-5 text-yellow-500" />
-                  Today's Health Tip
+                  Today&apos;s Health Tip
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -443,7 +435,7 @@ export default function Dashboard() {
               Welcome back, Sarah!
             </h1>
             <p className="text-muted-foreground">
-              Here's your health overview for today
+              Here&apos;s your health overview for today
             </p>
           </div>
 
