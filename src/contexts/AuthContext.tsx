@@ -24,10 +24,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
-  // Check if user is logged in on app start
+  // Set mounted to true after hydration and check auth status
   useEffect(() => {
+    setMounted(true);
     checkAuthStatus();
   }, []);
 
@@ -112,8 +114,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, signup, logout }}>
-      {children}
+    <AuthContext.Provider value={{ user, isLoading: isLoading || !mounted, login, signup, logout }}>
+      <div suppressHydrationWarning>
+        {children}
+      </div>
     </AuthContext.Provider>
   );
 }
