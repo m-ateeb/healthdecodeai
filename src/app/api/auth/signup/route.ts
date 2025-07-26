@@ -37,7 +37,9 @@ export async function POST(req: Request) {
     const name = `${firstName} ${lastName}`
     
     const user = await User.create({ 
-      name, 
+      name,
+      firstName,
+      lastName,
       email, 
       password: hashedPassword 
     })
@@ -55,8 +57,8 @@ export async function POST(req: Request) {
       user: {
         id: user._id,
         name: user.name,
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
+        firstName: user.firstName || firstName,
+        lastName: user.lastName || lastName,
         email: user.email
       }
     })
@@ -72,9 +74,10 @@ export async function POST(req: Request) {
     return response
   } catch (error) {
     console.error('Signup error details:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : 'UnknownError',
+      error: error
     })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

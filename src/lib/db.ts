@@ -18,6 +18,10 @@ console.log('Database connection attempt:', {
  * in development. This prevents connections growing exponentially
  * during API Route usage.
  */
+declare global {
+  var mongoose: any; // This must be a `var` and not a `let / const`
+}
+
 let cached = global.mongoose;
 
 if (!cached) {
@@ -37,8 +41,12 @@ async function connectDB() {
       socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGODB_URI as string, opts).then((mongoose) => {
+      console.log('Database connected successfully');
       return mongoose;
+    }).catch((error) => {
+      console.error('Database connection failed:', error);
+      throw error;
     });
   }
 
@@ -46,6 +54,7 @@ async function connectDB() {
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
+    console.error('Database connection error:', e);
     throw e;
   }
 

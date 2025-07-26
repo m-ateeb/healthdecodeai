@@ -8,12 +8,21 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
+    console.log('Forgot password attempt - Environment check:', {
+      hasResendKey: !!process.env.RESEND_API_KEY,
+      hasResendFromEmail: !!process.env.RESEND_FROM_EMAIL,
+      hasBaseUrl: !!process.env.NEXT_PUBLIC_APP_URL,
+      nodeEnv: process.env.NODE_ENV
+    })
+
     await connectDB();
     const { email } = await req.json();
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
+
+    console.log('Password reset requested for:', email);
 
     // Look up user by email
     const user = await User.findOne({ email });
@@ -24,10 +33,13 @@ export async function POST(req: Request) {
     }
 
     const token = generateResetToken(user._id.toString());
-    const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?token=${token}`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const resetLink = `${baseUrl}/reset-password?token=${token}`;
+
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
 
     await resend.emails.send({
-      from: 'HealthDecodeAI <no-reply@healthdecodeai.com>',
+      from: `HealthDecodeAI <${fromEmail}>`,
       to: user.email,
       subject: 'Reset your HealthDecodeAI password',
       html: `
@@ -47,7 +59,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: 'Password reset email sent! Check your inbox.' });
   } catch (error) {
-    console.error('Forgot password error:', error);
+    console.error('Forgot password error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : 'UnknownError',
+      error: error
+    });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
