@@ -6,8 +6,16 @@ import { generateToken } from '@/lib/auth'
 
 export async function POST(req: Request) {
   try {
+    console.log('Login attempt - Environment check:', {
+      hasMongoUri: !!process.env.MONGODB_URI,
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      nodeEnv: process.env.NODE_ENV
+    })
+    
     await connectDB()
     const { email, password } = await req.json()
+    
+    console.log('Login attempt for email:', email)
 
     // Validation
     if (!email || !password) {
@@ -16,12 +24,14 @@ export async function POST(req: Request) {
 
     // Find user
     const user = await User.findOne({ email })
+    console.log('User found:', !!user)
     if (!user) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 })
     }
 
     // Verify password
     const isValid = await comparePasswords(password, user.password)
+    console.log('Password valid:', isValid)
     if (!isValid) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 })
     }
@@ -48,13 +58,18 @@ export async function POST(req: Request) {
     response.cookies.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 // 7 days
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      path: '/'
     })
 
     return response
   } catch (error) {
-    console.error('Login error:', error)
+    console.error('Login error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

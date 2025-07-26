@@ -3,15 +3,20 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error('JWT_SECRET environment variable is not set');
+  throw new Error('JWT_SECRET is required');
+}
 
 export function generateToken(payload: object) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign(payload, JWT_SECRET as string, { expiresIn: '7d' });
 }
 
 export function verifyToken(token: string) {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    return jwt.verify(token, JWT_SECRET as string);
   } catch (err) {
     return null;
   }
