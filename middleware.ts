@@ -3,10 +3,10 @@ import type { NextRequest } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 
 // Define protected routes
-const protectedRoutes = ['/dashboard', '/chat', '/profile', '/settings'];
+const protectedRoutes = ['/dashboard', '/profile', '/settings'];
 const authRoutes = ['/login', '/signup'];
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('token')?.value;
 

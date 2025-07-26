@@ -26,7 +26,6 @@ export function Navigation() {
 
   const authenticatedNavItems = [
     { href: '/dashboard', label: 'Dashboard' },
-    { href: '/chat', label: 'AI Chat' },
     { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact' },
   ];

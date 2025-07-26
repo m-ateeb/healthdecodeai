@@ -36,12 +36,17 @@ export async function getUserFromCookie() {
 /**
  * For use in API routes with NextRequest
  */
-export function getUserFromRequest(req: NextRequest) {
-  const token = req.cookies.get('token')?.value;
-  if (!token) return null;
+export async function getUserFromRequest(req: NextRequest) {
+  try {
+    const token = req.cookies.get('token')?.value;
+    if (!token) return null;
 
-  const user = verifyToken(token);
-  return user || null;
+    const user = verifyToken(token);
+    return user || null;
+  } catch (error) {
+    console.error('getUserFromRequest error:', error);
+    return null;
+  }
 }
 
 /**

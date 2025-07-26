@@ -5,7 +5,7 @@ import User from '@/models/User';
 
 export async function GET(req: NextRequest) {
   try {
-    const userPayload = getUserFromRequest(req);
+    const userPayload = await getUserFromRequest(req);
     
     if (!userPayload || typeof userPayload !== 'object' || !('userId' in userPayload)) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });

@@ -17,7 +17,7 @@ export function Footer() {
     { name: 'Medical Report Analysis', href: '/services#analysis' },
     { name: 'Drug Interaction Checker', href: '/services#interactions' },
     { name: 'Health Monitoring', href: '/services#monitoring' },
-    { name: 'AI Consultation', href: '/chat' },
+    { name: 'AI Consultation', href: '/dashboard' },
     { name: 'Emergency Support', href: '/contact' },
     { name: 'Health Records', href: '/dashboard' }
   ];

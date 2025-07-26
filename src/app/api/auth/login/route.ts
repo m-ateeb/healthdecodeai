@@ -38,9 +38,15 @@ export async function POST(req: Request) {
 
     // Generate token
     const token = generateToken({ 
-      id: user._id, 
+      userId: user._id.toString(), // Use userId instead of id, and convert to string
       email: user.email,
       name: user.name 
+    })
+    
+    console.log('Token generated successfully:', {
+      userId: user._id.toString(),
+      tokenLength: token.length,
+      email: user.email
     })
 
     // Set cookie and return user data
@@ -57,10 +63,11 @@ export async function POST(req: Request) {
 
     response.cookies.set('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+      secure: false, // Set to false for development (localhost)
+      sameSite: 'lax', // Change to 'lax' for better localhost compatibility
       maxAge: 7 * 24 * 60 * 60, // 7 days
-      path: '/'
+      path: '/',
+      domain: undefined // Don't set domain for localhost
     })
 
     return response
