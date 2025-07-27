@@ -6,64 +6,22 @@ import MedicalReport from '@/models/ai/MedicalReport';
 import { createAIService, DEFAULT_AI_CONFIG, HEALTH_PROMPTS } from '@/lib/ai-service';
 import { ocrService } from '@/lib/ocr-service';
 import { validateMedicalReportFile } from '@/lib/file-validation';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
 
 interface JWTPayload {
   userId: string;
   email: string;
 }
 
-async function ensureUploadsDirectory() {
-  const uploadsDir = join(process.cwd(), 'uploads');
-  const medicalReportsDir = join(uploadsDir, 'medical-reports');
-
-  try {
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-    if (!existsSync(medicalReportsDir)) {
-      await mkdir(medicalReportsDir, { recursive: true });
-    }
-  } catch (error) {
-    console.error('Error creating upload directories:', error);
-    throw error;
-  }
-}
-
-async function saveUploadedFile(file: File, userId: string): Promise<string> {
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const timestamp = Date.now();
-  const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-  const fileName = `${userId}_${timestamp}_${sanitizedFileName}`;
-  const uploadsDir = join(process.cwd(), 'uploads', 'medical-reports');
-  const filePath = join(uploadsDir, fileName);
-
-  await writeFile(filePath, buffer);
-  return filePath;
-}
-
 async function verifyToken(request: NextRequest): Promise<string | null> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get('token')?.value;
-    
-    console.log('Reports API Token verification:', {
-      hasToken: !!token,
-      tokenLength: token?.length
-    });
+    const token = cookieStore.get('token')?.value || request.headers.get('authorization')?.replace('Bearer ', '');
     
     if (!token) {
-      console.log('No token found in cookies');
       return null;
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload;
-    console.log('Reports API Token decoded successfully:', {
-      userId: decoded.userId,
-      email: decoded.email
-    });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret') as JWTPayload;
     return decoded.userId;
   } catch (error) {
     console.error('Token verification failed:', error);
@@ -113,19 +71,18 @@ async function extractTextFromFile(buffer: Buffer, fileType: string, fileName: s
       const pdfResult = await ocrService.extractTextFromPDF(buffer);
       return pdfResult.text;
     }
-    
-    // Handle other document types (Word, etc.)
-    if (fileType.includes('document') || fileType.includes('msword')) {
-      // For now, return a placeholder - in production you'd use a library like mammoth
-      return `Document content from ${fileName}:\n\nThis document contains medical information that requires proper text extraction. Please ensure the document is in a supported format for full analysis.`;
+
+    // Handle Word documents (basic text extraction)
+    if (fileType.includes('word') || fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
+      console.log('Processing Word document...');
+      // For now, return a placeholder - you can implement proper Word document parsing later
+      return 'Word document processing is not yet implemented. Please convert to PDF or text format.';
     }
-    
-    // Fallback for unsupported types
-    return `Content from ${fileName}:\n\nUnsupported file type for text extraction. Please upload the document as PDF, image, or text file for full analysis.`;
-    
+
+    throw new Error(`Unsupported file type: ${fileType}`);
   } catch (error) {
-    console.error('Text extraction error:', error);
-    throw new Error(`Failed to extract text from ${fileName}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('Text extraction failed:', error);
+    throw error;
   }
 }
 
@@ -196,21 +153,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'uploads', 'medical-reports');
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now();
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const fileName = `${timestamp}_${sanitizedName}`;
-    const filePath = join(uploadsDir, fileName);
-
-    // Save file
+    // Convert file to buffer for processing
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(filePath, buffer);
 
     // Extract text from file
     console.log('Starting text extraction...');
@@ -225,50 +169,55 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create medical report record
+    // Generate unique filename for reference (not stored locally)
+    const timestamp = Date.now();
+    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const fileName = `${timestamp}_${sanitizedName}`;
+
+    // Create medical report record (without local file storage)
     const medicalReport = new MedicalReport({
       userId,
       fileName,
       originalName: file.name,
       fileType: file.type,
       fileSize: file.size,
-      filePath: filePath,
+      filePath: '', // No local file path - file is processed in memory
       reportType,
       extractedText,
       analysisStatus: 'processing'
     });
 
     await medicalReport.save();
+    console.log('Medical report saved to database');
 
-    // Analyze document with AI
+    // Perform AI analysis
     try {
       console.log('Starting AI analysis...');
       const aiService = createAIService(DEFAULT_AI_CONFIG);
-      const analysis = await aiService.analyzeDocument(extractedText, reportType);
-
-      console.log('AI analysis completed successfully');
-
-      // Parse AI response to extract structured data
-      const content = analysis.content;
       
-      // Extract confidence level from the response
-      const confidenceMatch = content.match(/confidence[:\s]*(\d+)%/i);
-      const confidence = confidenceMatch ? parseInt(confidenceMatch[1]) : 85;
+      const analysisPrompt = `${HEALTH_PROMPTS.REPORT_ANALYSIS}\n\nMedical Report Content:\n${extractedText}\n\nPlease provide a comprehensive analysis of this medical report.`;
+      
+      const aiResponse = await aiService.generateResponse(analysisPrompt);
+      const content = aiResponse.content;
 
-      // Extract key findings (look for bullet points or numbered lists)
+      // Parse AI response to extract structured information
       const keyFindings: string[] = [];
-      const findingsMatch = content.match(/key findings?[:\s]*\n?([\s\S]*?)(?=\n##|\n\*\*|$)/i);
+      const recommendations: string[] = [];
+      const riskFactors: string[] = [];
+      let confidence = 85; // Default confidence
+
+      // Extract key findings
+      const findingsMatch = content.match(/Key Findings?:(.*?)(?=Recommendations?|Risk Factors?|$)/is);
       if (findingsMatch) {
         const findings = findingsMatch[1]
           .split(/[•\-\*]\s*/)
           .map(f => f.trim())
           .filter(f => f.length > 0 && !f.match(/^\d+\./));
-        keyFindings.push(...findings.slice(0, 5)); // Limit to 5 findings
+        keyFindings.push(...findings.slice(0, 5)); // Limit to 5 key findings
       }
 
       // Extract recommendations
-      const recommendations: string[] = [];
-      const recMatch = content.match(/recommendations?[:\s]*\n?([\s\S]*?)(?=\n##|\n\*\*|$)/i);
+      const recMatch = content.match(/Recommendations?:(.*?)(?=Risk Factors?|$)/is);
       if (recMatch) {
         const recs = recMatch[1]
           .split(/[•\-\*]\s*/)
@@ -278,8 +227,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Extract risk factors
-      const riskFactors: string[] = [];
-      const riskMatch = content.match(/(?:risk factors?|concerns?|areas of concern)[:\s]*\n?([\s\S]*?)(?=\n##|\n\*\*|$)/i);
+      const riskMatch = content.match(/Risk Factors?:(.*?)(?=\n\n|$)/is);
       if (riskMatch) {
         const risks = riskMatch[1]
           .split(/[•\-\*]\s*/)
@@ -330,7 +278,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Upload API error:', error);
+    console.error('Reports API error:', error);
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : 'No stack trace'
@@ -390,6 +338,55 @@ export async function GET(request: NextRequest) {
     });
     return NextResponse.json(
       { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' }, 
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    await connectDB();
+    
+    const userId = await verifyToken(request);
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const reportId = searchParams.get('id');
+
+    if (!reportId) {
+      return NextResponse.json(
+        { error: 'Report ID is required' }, 
+        { status: 400 }
+      );
+    }
+
+    // Find and delete the report (only if it belongs to the user)
+    const report = await MedicalReport.findOneAndDelete({ 
+      _id: reportId, 
+      userId 
+    });
+
+    if (!report) {
+      return NextResponse.json(
+        { error: 'Report not found or access denied' }, 
+        { status: 404 }
+      );
+    }
+
+    console.log(`Report ${reportId} deleted successfully for user ${userId}`);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Report deleted successfully',
+      reportId
+    });
+
+  } catch (error) {
+    console.error('Reports DELETE API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' }, 
       { status: 500 }
     );
   }

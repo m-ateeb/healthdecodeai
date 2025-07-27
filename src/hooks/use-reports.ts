@@ -27,6 +27,7 @@ export interface UseReportsReturn {
   uploadReport: (file: File, reportType?: string) => Promise<MedicalReport | null>;
   loadReports: () => Promise<void>;
   getReport: (id: string) => Promise<MedicalReport | null>;
+  deleteReport: (id: string) => Promise<boolean>;
   clearError: () => void;
 }
 
@@ -163,6 +164,36 @@ export function useReports(): UseReportsReturn {
     }
   }, []);
 
+  // Delete report
+  const deleteReport = useCallback(async (id: string): Promise<boolean> => {
+    try {
+      setError(null);
+      
+      const response = await fetch(`/api/ai/reports?id=${id}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete report');
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        // Remove from state
+        setReports(prev => prev.filter(report => report._id !== id));
+        console.log(`Report ${id} deleted successfully`);
+        return true;
+      } else {
+        throw new Error(data.error || 'Failed to delete report');
+      }
+    } catch (err) {
+      console.error('Delete failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to delete report');
+      return false;
+    }
+  }, []);
+
   // Clear error
   const clearError = useCallback(() => {
     setError(null);
@@ -181,6 +212,7 @@ export function useReports(): UseReportsReturn {
     uploadReport,
     loadReports,
     getReport,
+    deleteReport,
     clearError
   };
 }

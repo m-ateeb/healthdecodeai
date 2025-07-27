@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { HistoryManager } from '@/components/HistoryManager';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { 
   FileText, 
   Upload, 
@@ -34,7 +35,8 @@ import {
   Heart,
   X,
   CheckCircle,
-  Loader2
+  Loader2,
+  Trash2
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useDashboardChat } from '@/hooks/use-dashboard-chat';
@@ -42,7 +44,7 @@ import { useReports } from '@/hooks/use-reports';
 
 function DashboardContent() {
   const { user } = useAuth();
-  const { reports, isLoading: reportsLoading, isUploading, uploadReport } = useReports();
+  const { reports, isLoading: reportsLoading, isUploading, uploadReport, deleteReport } = useReports();
   const {
     sessions,
     currentReportSession,
@@ -146,6 +148,13 @@ function DashboardContent() {
     }
     // Reset file input
     event.target.value = '';
+  };
+
+  const handleDeleteReport = async (reportId: string) => {
+    const success = await deleteReport(reportId);
+    if (success) {
+      console.log(`Report ${reportId} deleted successfully`);
+    }
   };
 
   const handleStartReportAnalysis = () => {
@@ -534,6 +543,30 @@ function DashboardContent() {
                                 Discuss
                               </Button>
                             )}
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete Report?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This will permanently delete the report "{report.originalName}". This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction 
+                                    onClick={() => handleDeleteReport(report._id)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         </div>
                       ))}
