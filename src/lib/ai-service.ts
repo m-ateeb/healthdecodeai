@@ -178,7 +178,7 @@ export class MockAIService {
         "You can upload documents in PDF, image, text, or Word document format, and I'll extract key information and provide insights in simple terms. " +
         "Would you like to upload a report for analysis?";
     } else if (userContent.includes('hello') || userContent.includes('hi')) {
-      response = "Hello! I'm your HealthWise AI assistant. I'm here to help you understand medical reports, " +
+      response = "Hello! I'm your HealthDecode AI assistant. I'm here to help you understand medical reports, " +
         "check medication interactions, answer health questions, and provide general medical information. " +
         "How can I assist you today?";
     } else {
@@ -294,7 +294,7 @@ export const DEFAULT_AI_CONFIG: AIConfig = {
 
 // Health-specific prompt templates
 export const HEALTH_PROMPTS = {
-  system: `You are HealthWise AI, a friendly and knowledgeable health assistant. Your goal is to explain medical information in the simplest possible terms that anyone can understand, regardless of their medical background.
+  system: `You are HealthDecode AI, a friendly and knowledgeable health assistant. Your goal is to explain medical information in the simplest possible terms that anyone can understand, regardless of their medical background.
 
 Core principles:
 - Use everyday language, avoid medical jargon
