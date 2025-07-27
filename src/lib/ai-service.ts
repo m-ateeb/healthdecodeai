@@ -61,7 +61,15 @@ export class GeminiAIService {
 
       const fullPrompt = `${systemMessage}\n\n${conversationHistory}\n\nAssistant:`;
 
-      const result = await model.generateContent(fullPrompt);
+      // Add aggressive timeout for Vercel deployment (20 seconds max)
+      const generateWithTimeout = Promise.race([
+        model.generateContent(fullPrompt),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Gemini API timeout after 20 seconds')), 20000)
+        )
+      ]);
+
+      const result = await generateWithTimeout as any;
       const response = await result.response;
       const text = response.text();
 
