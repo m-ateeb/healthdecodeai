@@ -60,7 +60,8 @@ function DashboardContent() {
     getCurrentMedicationSession,
     getReportSessions,
     getMedicationSessions,
-    clearError
+    clearError,
+    loadSession
   } = useDashboardChat();
   
   // States
@@ -130,7 +131,7 @@ function DashboardContent() {
           const sessionId = createSession('report');
           setCurrentReportSession(sessionId);
           setActiveTab('report-chat');
-          await sendMessage(sessionId, `I've uploaded a ${file.name}. Please analyze this medical report for me.`);
+          await sendMessage(sessionId, `I've just uploaded a medical report: "${file.name}" (${result.reportType}). Please provide a detailed analysis of this report, explaining the findings in simple terms, highlighting any areas of concern, and providing recommendations for next steps.`);
           
           // Clear progress after 2 seconds
           setTimeout(() => setUploadProgress(null), 2000);
@@ -593,13 +594,15 @@ function DashboardContent() {
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => {
+                            onClick={async () => {
                               if (session.type === 'report') {
                                 setCurrentReportSession(session.sessionId);
                                 setActiveTab('report-chat');
+                                await loadSession(session.sessionId);
                               } else {
                                 setCurrentMedicationSession(session.sessionId);
                                 setActiveTab('medication-chat');
+                                await loadSession(session.sessionId);
                               }
                             }}
                           >
@@ -643,31 +646,31 @@ function DashboardContent() {
                     {currentReportSession && getCurrentReportSession() ? (
                       <div className="space-y-4">
                         {getCurrentReportSession()!.messages.map((message) => (
-                          <div
-                            key={message.id}
-                            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
-                          >
-                            <div className={`flex items-start space-x-3 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                              <div className={`p-2 rounded-full flex-shrink-0 ${message.role === 'user' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                                {message.role === 'user' ? (
-                                  <User className="h-4 w-4 text-white" />
-                                ) : (
-                                  <Bot className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-                                )}
-                              </div>
-                              <div className={`p-4 rounded-lg break-words ${
-                                message.role === 'user' 
-                                  ? 'bg-blue-600 text-white' 
-                                  : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
-                              }`}>
-                                <p className="whitespace-pre-wrap break-words">{message.content}</p>
-                                <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
-                                  {format(message.timestamp, 'HH:mm')}
-                                </p>
+                            <div
+                              key={message.id}
+                              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
+                            >
+                              <div className={`flex items-start space-x-3 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                                <div className={`p-2 rounded-full flex-shrink-0 ${message.role === 'user' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                                  {message.role === 'user' ? (
+                                    <User className="h-4 w-4 text-white" />
+                                  ) : (
+                                    <Bot className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                                  )}
+                                </div>
+                                <div className={`p-4 rounded-lg break-words ${
+                                  message.role === 'user' 
+                                    ? 'bg-blue-600 text-white' 
+                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+                                }`}>
+                                  <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                                  <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
+                                    {format(message.timestamp, 'HH:mm')}
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
                         {isSending && (
                           <div className="flex justify-start animate-fade-in">
                             <div className="flex items-start space-x-3">
@@ -761,31 +764,31 @@ function DashboardContent() {
                     {currentMedicationSession && getCurrentMedicationSession() ? (
                       <div className="space-y-4">
                         {getCurrentMedicationSession()!.messages.map((message) => (
-                          <div
-                            key={message.id}
-                            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
-                          >
-                            <div className={`flex items-start space-x-3 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                              <div className={`p-2 rounded-full flex-shrink-0 ${message.role === 'user' ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                                {message.role === 'user' ? (
-                                  <User className="h-4 w-4 text-white" />
-                                ) : (
-                                  <Bot className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-                                )}
-                              </div>
-                              <div className={`p-4 rounded-lg break-words ${
-                                message.role === 'user' 
-                                  ? 'bg-green-600 text-white' 
-                                  : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
-                              }`}>
-                                <p className="whitespace-pre-wrap break-words">{message.content}</p>
-                                <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-green-100' : 'text-gray-500'}`}>
-                                  {format(message.timestamp, 'HH:mm')}
-                                </p>
+                            <div
+                              key={message.id}
+                              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
+                            >
+                              <div className={`flex items-start space-x-3 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                                <div className={`p-2 rounded-full flex-shrink-0 ${message.role === 'user' ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                                  {message.role === 'user' ? (
+                                    <User className="h-4 w-4 text-white" />
+                                  ) : (
+                                    <Bot className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                                  )}
+                                </div>
+                                <div className={`p-4 rounded-lg break-words ${
+                                  message.role === 'user' 
+                                    ? 'bg-green-600 text-white' 
+                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+                                }`}>
+                                  <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                                  <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-green-100' : 'text-gray-500'}`}>
+                                    {format(message.timestamp, 'HH:mm')}
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
                         {isSending && (
                           <div className="flex justify-start animate-fade-in">
                             <div className="flex items-start space-x-3">
@@ -853,9 +856,11 @@ function DashboardContent() {
             <TabsContent value="report-history" className="space-y-6">
               <HistoryManager 
                 type="report" 
-                onSessionSelect={(sessionId) => {
+                onSessionSelect={async (sessionId) => {
                   setCurrentReportSession(sessionId);
                   setActiveTab('report-chat');
+                  // Load the session messages
+                  await loadSession(sessionId);
                 }}
               />
             </TabsContent>
@@ -864,9 +869,11 @@ function DashboardContent() {
             <TabsContent value="medication-history" className="space-y-6">
               <HistoryManager 
                 type="medication" 
-                onSessionSelect={(sessionId) => {
+                onSessionSelect={async (sessionId) => {
                   setCurrentMedicationSession(sessionId);
                   setActiveTab('medication-chat');
+                  // Load the session messages
+                  await loadSession(sessionId);
                 }}
               />
             </TabsContent>

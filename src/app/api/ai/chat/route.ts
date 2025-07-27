@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import connectDB from '@/lib/db';
 import ChatSession, { IChatMessage } from '@/models/ai/ChatSession';
+import MedicalReport from '@/models/ai/MedicalReport';
 import { createAIService, DEFAULT_AI_CONFIG, HEALTH_PROMPTS, ChatCompletionMessage } from '@/lib/ai-service';
 
 interface JWTPayload {
@@ -99,9 +100,48 @@ export async function POST(request: NextRequest) {
 
     chatSession.messages.push(userMessage);
 
+    // For report analysis sessions, get the latest medical report context
+    let reportContext = '';
+    if (chatSession.type === 'report' || sessionId.includes('report')) {
+      try {
+        const latestReport = await MedicalReport.findOne({ 
+          userId,
+          analysisStatus: 'completed'
+        }).sort({ uploadedAt: -1 });
+
+        if (latestReport) {
+          console.log(`Found latest report: ${latestReport.originalName}, analysis status: ${latestReport.analysisStatus}`);
+          
+          // Include the extracted text and AI analysis in context
+          reportContext = `\n\nMEDICAL REPORT CONTEXT:
+File: ${latestReport.originalName}
+Type: ${latestReport.reportType}
+Uploaded: ${latestReport.uploadedAt}
+
+EXTRACTED TEXT FROM REPORT:
+${latestReport.extractedText}
+
+PREVIOUS AI ANALYSIS:
+${latestReport.aiAnalysis?.summary || 'No analysis available'}
+
+Please use this medical report information to answer the user's questions about their health report.`;
+
+          console.log(`Added report context for chat session, extracted text length: ${latestReport.extractedText?.length || 0}`);
+        } else {
+          console.log('No completed medical reports found for user');
+        }
+      } catch (error) {
+        console.error('Error fetching medical report context:', error);
+      }
+    }
+
     // Prepare messages for AI service
+    const systemMessage = chatSession.type === 'report' && reportContext 
+      ? HEALTH_PROMPTS.system + reportContext
+      : HEALTH_PROMPTS.system;
+      
     const messages: ChatCompletionMessage[] = [
-      { role: 'system', content: HEALTH_PROMPTS.system },
+      { role: 'system', content: systemMessage },
       ...chatSession.messages.map((msg: IChatMessage): ChatCompletionMessage => ({
         role: msg.role as 'user' | 'assistant',
         content: msg.content

@@ -42,6 +42,7 @@ export class GeminiAIService {
     messages: ChatCompletionMessage[],
     options?: Partial<AIConfig>
   ): Promise<AIResponse> {
+    console.log('GeminiAIService: Generating chat completion');
     try {
       const model = this.genAI.getGenerativeModel({ 
         model: this.config.model || 'gemini-1.5-flash',
@@ -147,6 +148,7 @@ export class MockAIService {
     messages: ChatCompletionMessage[],
     options?: Partial<AIConfig>
   ): Promise<AIResponse> {
+    console.log('MockAIService: Generating chat completion');
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
 
@@ -238,13 +240,46 @@ This analysis is for informational purposes only. Please consult with your healt
 
 // Factory function to create AI service
 export function createAIService(config: AIConfig) {
+  console.log('Creating AI service with config:', {
+    provider: config.provider,
+    hasApiKey: !!config.apiKey,
+    model: config.model
+  });
+
   switch (config.provider) {
     case 'gemini':
-      return new GeminiAIService(config);
+      // Check if Gemini API key is available
+      if (!config.apiKey) {
+        console.warn('Gemini API key not found, falling back to mock service');
+        return new MockAIService({ ...config, provider: 'mock' });
+      }
+      try {
+        console.log('Initializing Gemini AI service...');
+        const service = new GeminiAIService(config);
+        console.log('Gemini AI service initialized successfully');
+        return service;
+      } catch (error) {
+        console.warn('Failed to initialize Gemini service, falling back to mock service:', error);
+        return new MockAIService({ ...config, provider: 'mock' });
+      }
     case 'mock':
+      console.log('Using Mock AI service');
       return new MockAIService(config);
     default:
-      return new GeminiAIService(config); // Default to Gemini now
+      // Default to Gemini, but fall back to mock if no API key
+      if (!config.apiKey) {
+        console.warn('No API key provided, using mock service');
+        return new MockAIService({ ...config, provider: 'mock' });
+      }
+      try {
+        console.log('Initializing default Gemini AI service...');
+        const service = new GeminiAIService(config);
+        console.log('Default Gemini AI service initialized successfully');
+        return service;
+      } catch (error) {
+        console.warn('Failed to initialize default AI service, falling back to mock service:', error);
+        return new MockAIService({ ...config, provider: 'mock' });
+      }
   }
 }
 

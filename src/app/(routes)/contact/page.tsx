@@ -208,7 +208,7 @@ const Contact = () => {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                <form action="https://formsubmit.co/180c59a42d344d696c17b89e1ba3c429" method="POST" className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
                         <label className="text-sm font-medium mb-2 block">Full Name</label>

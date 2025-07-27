@@ -4,8 +4,8 @@ import jwt from 'jsonwebtoken';
 import connectDB from '@/lib/db';
 import MedicalReport from '@/models/ai/MedicalReport';
 import { createAIService, DEFAULT_AI_CONFIG, HEALTH_PROMPTS } from '@/lib/ai-service';
-import { ocrService } from '@/lib/ocr-service';
 import { validateMedicalReportFile } from '@/lib/file-validation';
+import axios from 'axios';
 
 interface JWTPayload {
   userId: string;
@@ -15,7 +15,7 @@ interface JWTPayload {
 async function verifyToken(request: NextRequest): Promise<string | null> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get('token')?.value || request.headers.get('authorization')?.replace('Bearer ', '');
+    const token = cookieStore.get('token')?.value;
     
     if (!token) {
       return null;
@@ -29,7 +29,6 @@ async function verifyToken(request: NextRequest): Promise<string | null> {
   }
 }
 
-// Extract text from different file types
 async function extractTextFromFile(buffer: Buffer, fileType: string, fileName: string): Promise<string> {
   try {
     console.log(`Extracting text from ${fileName} (${fileType})`);
@@ -39,28 +38,57 @@ async function extractTextFromFile(buffer: Buffer, fileType: string, fileName: s
       return buffer.toString('utf-8');
     }
     
-    // Handle images with OCR
-    if (ocrService.isImageTypeSupported(fileType)) {
-      console.log('Processing image with OCR...');
+    // Handle images with OCR Space API
+    if (fileType.includes('image/')) {
+      console.log('Processing image with OCR Space API...');
       try {
-        const ocrResult = await ocrService.extractTextFromImage(buffer);
-        
-        // Validate if the content looks medical
-        const validation = ocrService.validateMedicalContent(ocrResult.text);
-        
-        console.log(`OCR completed: ${ocrResult.confidence}% confidence, Medical validation: ${validation.confidence}%`);
-        
-        if (!validation.isValid) {
-          console.warn('OCR result may not contain medical information:', validation.suggestions);
+        // Check if OCR Space API key is configured
+        if (!process.env.OCR_SPACE_API_KEY) {
+          throw new Error('OCR Space API key not configured');
         }
+
+        // Create form data for OCR Space API
+        const formData = new FormData();
+        formData.append('apikey', process.env.OCR_SPACE_API_KEY);
+        formData.append('language', 'eng');
+        formData.append('file', new Blob([buffer], { type: fileType }), fileName);
+
+        console.log('Sending request to OCR Space API...');
         
-        if (ocrResult.text.length < 20) {
+        // Send request to OCR Space API
+        const response = await axios.post('https://api.ocr.space/parse/image', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          timeout: 30000, // 30 second timeout
+        });
+
+        console.log('Received response from OCR Space API');
+
+        if (response.data.IsErroredOnProcessing) {
+          throw new Error(`OCR processing failed: ${response.data.ErrorMessage}`);
+        }
+
+        const parsedResults = response.data.ParsedResults;
+        if (!parsedResults || parsedResults.length === 0) {
+          throw new Error('No text detected in image. Please ensure the image contains clear, readable text.');
+        }
+
+        // Extract text from all pages
+        const extractedText = parsedResults
+          .map((result: any) => result.ParsedText || '')
+          .join('\n')
+          .trim();
+
+        if (extractedText.length < 20) {
           throw new Error('Very little text extracted from image. Please ensure the image is clear and contains readable text.');
         }
-        
-        return ocrResult.text;
+
+        console.log(`OCR Space API completed: ${extractedText.length} characters extracted`);
+        return extractedText;
+
       } catch (ocrError) {
-        console.error('OCR processing failed:', ocrError);
+        console.error('OCR Space API processing failed:', ocrError);
         throw new Error(`Failed to extract text from image: ${ocrError instanceof Error ? ocrError.message : 'OCR processing failed'}`);
       }
     }
@@ -68,8 +96,27 @@ async function extractTextFromFile(buffer: Buffer, fileType: string, fileName: s
     // Handle PDFs
     if (fileType === 'application/pdf') {
       console.log('Processing PDF...');
-      const pdfResult = await ocrService.extractTextFromPDF(buffer);
-      return pdfResult.text;
+      try {
+        // Use pdf-parse for PDF text extraction
+        const pdfParse = await import('pdf-parse').catch(() => null);
+        if (!pdfParse?.default) {
+          throw new Error('PDF parsing library not available');
+        }
+
+        const data = await pdfParse.default(buffer);
+        const extractedText = data.text.trim();
+
+        if (extractedText.length < 20) {
+          throw new Error('Very little text extracted from PDF. Please ensure the PDF contains readable text.');
+        }
+
+        console.log(`PDF extraction completed: ${extractedText.length} characters from ${data.numpages} pages`);
+        return extractedText;
+
+      } catch (pdfError) {
+        console.error('PDF text extraction failed:', pdfError);
+        throw new Error(`Failed to extract text from PDF: ${pdfError instanceof Error ? pdfError.message : 'PDF processing failed'}`);
+      }
     }
 
     // Handle Word documents (basic text extraction)
@@ -195,9 +242,7 @@ export async function POST(request: NextRequest) {
       console.log('Starting AI analysis...');
       const aiService = createAIService(DEFAULT_AI_CONFIG);
       
-      const analysisPrompt = `${HEALTH_PROMPTS.REPORT_ANALYSIS}\n\nMedical Report Content:\n${extractedText}\n\nPlease provide a comprehensive analysis of this medical report.`;
-      
-      const aiResponse = await aiService.generateResponse(analysisPrompt);
+      const aiResponse = await aiService.analyzeDocument(extractedText, reportType);
       const content = aiResponse.content;
 
       // Parse AI response to extract structured information

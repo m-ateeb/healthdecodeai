@@ -175,7 +175,9 @@ export function useDashboardChat() {
 
     setState(prev => ({
       ...prev,
-      sessions: [newSession, ...prev.sessions],
+      sessions: prev.sessions.some(s => s.sessionId === sessionId) 
+        ? prev.sessions // Don't add if already exists
+        : [newSession, ...prev.sessions],
       [type === 'report' ? 'currentReportSession' : 'currentMedicationSession']: sessionId
     }));
 
@@ -240,6 +242,7 @@ export function useDashboardChat() {
       }
 
       const data = await response.json();
+      
       if (data.success && data.message) {
         // Add AI response
         const aiMessage: ChatMessage = {
@@ -263,6 +266,8 @@ export function useDashboardChat() {
           ),
           isSending: false
         }));
+      } else {
+        throw new Error(data.error || 'Failed to get AI response');
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -277,39 +282,11 @@ export function useDashboardChat() {
   // Set active sessions
   const setCurrentReportSession = useCallback((sessionId: string | null) => {
     setState(prev => ({ ...prev, currentReportSession: sessionId }));
-    // Only try to load the session if it's not already in our local state
-    if (sessionId) {
-      setState(prev => {
-        const existingSession = prev.sessions.find(s => s.sessionId === sessionId);
-        if (!existingSession || existingSession.messages.length === 0) {
-          // Don't try to load new sessions from server yet - they don't exist until first message
-          return prev;
-        } else {
-          // Load existing session with messages
-          loadSession(sessionId);
-          return prev;
-        }
-      });
-    }
-  }, [loadSession]);
+  }, []);
 
   const setCurrentMedicationSession = useCallback((sessionId: string | null) => {
     setState(prev => ({ ...prev, currentMedicationSession: sessionId }));
-    // Only try to load the session if it's not already in our local state
-    if (sessionId) {
-      setState(prev => {
-        const existingSession = prev.sessions.find(s => s.sessionId === sessionId);
-        if (!existingSession || existingSession.messages.length === 0) {
-          // Don't try to load new sessions from server yet - they don't exist until first message
-          return prev;
-        } else {
-          // Load existing session with messages
-          loadSession(sessionId);
-          return prev;
-        }
-      });
-    }
-  }, [loadSession]);
+  }, []);
 
   // Get current sessions
   const getCurrentReportSession = useCallback(() => {

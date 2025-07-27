@@ -149,8 +149,19 @@ export function useReports(): UseReportsReturn {
         console.log(`Report uploaded successfully: ${newReport._id}`);
         console.log(`Analysis status: ${newReport.analysisStatus}`);
 
-        // Add to reports list
-        setReports(prev => [newReport, ...prev]);
+        // Add to reports list only if not already present
+        setReports(prev => {
+          const exists = prev.some(report => report._id === newReport._id);
+          if (exists) {
+            // Update existing report
+            return prev.map(report => 
+              report._id === newReport._id ? newReport : report
+            );
+          } else {
+            // Add new report
+            return [newReport, ...prev];
+          }
+        });
         return newReport;
       } else {
         throw new Error(data.error || 'Failed to upload report');
@@ -202,7 +213,7 @@ export function useReports(): UseReportsReturn {
   // Load reports on mount
   useEffect(() => {
     loadReports();
-  }, [loadReports]);
+  }, []); // Remove loadReports from deps to prevent unnecessary re-runs
 
   return {
     reports,

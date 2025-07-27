@@ -24,7 +24,7 @@ const medicalReportSchema = new mongoose.Schema({
   },
   filePath: {
     type: String,
-    required: true
+    required: false // No longer required since we don't store files locally
   },
   reportType: {
     type: String,
@@ -70,7 +70,7 @@ export interface IMedicalReport {
   originalName: string;
   fileType: string;
   fileSize: number;
-  filePath: string;
+  filePath?: string; // Made optional
   reportType: "blood_test" | "x_ray" | "mri" | "ct_scan" | "prescription" | "lab_report" | "other";
   analysisStatus: "pending" | "processing" | "completed" | "failed";
   aiAnalysis?: {
