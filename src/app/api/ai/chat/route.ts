@@ -6,6 +6,7 @@ import connectDB from '@/lib/db';
 import ChatSession, { IChatMessage } from '@/models/ai/ChatSession';
 import MedicalReport from '@/models/ai/MedicalReport';
 import { createAIService, DEFAULT_AI_CONFIG, HEALTH_PROMPTS, ChatCompletionMessage, AIResponse } from '@/lib/ai-service';
+export const runtime = 'nodejs';
 
 interface JWTPayload {
   userId: string;
