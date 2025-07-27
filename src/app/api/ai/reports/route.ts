@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import connectDB from '@/lib/db';
 import MedicalReport from '@/models/ai/MedicalReport';
 import { createAIService, DEFAULT_AI_CONFIG, HEALTH_PROMPTS } from '@/lib/ai-service';
@@ -97,13 +98,12 @@ async function extractTextFromFile(buffer: Buffer, fileType: string, fileName: s
     if (fileType === 'application/pdf') {
       console.log('Processing PDF...');
       try {
-        // Use pdf-parse for PDF text extraction
-        const pdfParse = await import('pdf-parse').catch(() => null);
-        if (!pdfParse?.default) {
-          throw new Error('PDF parsing library not available');
-        }
-
-        const data = await pdfParse.default(buffer);
+        // Use dynamic import to avoid potential import issues
+        const pdfParseModule = await import('pdf-parse');
+        const pdfParse = pdfParseModule.default || pdfParseModule;
+        
+        console.log('PDF parse module loaded successfully');
+        const data = await pdfParse(buffer);
         const extractedText = data.text.trim();
 
         if (extractedText.length < 20) {
@@ -347,9 +347,12 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const reportId = searchParams.get('id');
 
+    // Convert userId to ObjectId for proper comparison
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+
     if (reportId) {
       // Get specific report
-      const report = await MedicalReport.findOne({ _id: reportId, userId });
+      const report = await MedicalReport.findOne({ _id: reportId, userId: userObjectId });
       
       if (!report) {
         return NextResponse.json(
@@ -364,7 +367,7 @@ export async function GET(request: NextRequest) {
       });
     } else {
       // Get all reports for user
-      const reports = await MedicalReport.find({ userId })
+      const reports = await MedicalReport.find({ userId: userObjectId })
         .select('-extractedText -filePath')
         .sort({ uploadedAt: -1 })
         .limit(50);
@@ -390,15 +393,18 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    console.log('DELETE /api/ai/reports - Starting delete request');
     await connectDB();
     
     const userId = await verifyToken(request);
+    console.log('DELETE - User verification result:', { userId: !!userId });
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
     const reportId = searchParams.get('id');
+    console.log('DELETE - Report ID from params:', reportId);
 
     if (!reportId) {
       return NextResponse.json(
@@ -407,13 +413,34 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    console.log(`DELETE - Attempting to delete report ${reportId} for user ${userId}`);
+    
+    // Convert userId to ObjectId for proper comparison
+    let userObjectId;
+    try {
+      userObjectId = new mongoose.Types.ObjectId(userId);
+    } catch (error) {
+      console.error('DELETE - Invalid userId format:', userId);
+      return NextResponse.json(
+        { error: 'Invalid user ID format' }, 
+        { status: 400 }
+      );
+    }
+    
     // Find and delete the report (only if it belongs to the user)
     const report = await MedicalReport.findOneAndDelete({ 
       _id: reportId, 
-      userId 
+      userId: userObjectId 
+    });
+
+    console.log('DELETE - Database operation result:', { 
+      found: !!report, 
+      reportId: report?._id,
+      reportName: report?.originalName 
     });
 
     if (!report) {
+      console.log('DELETE - Report not found or access denied');
       return NextResponse.json(
         { error: 'Report not found or access denied' }, 
         { status: 404 }

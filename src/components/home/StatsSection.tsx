@@ -39,20 +39,13 @@ export function StatsSection() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-r from-blue-600 to-green-600 text-white relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="w-full h-full bg-repeat" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }}></div>
-      </div>
-      
+    <section className="py-20 relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Proven Results That Matter
           </h2>
-          <p className="text-xl opacity-90 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Join millions of users who trust HealthDecodeAI for their healthcare needs
           </p>
         </div>
@@ -61,16 +54,16 @@ export function StatsSection() {
           {stats.map((stat, index) => (
             <Card
               key={index} 
-              className={`text-center group animate-scale-in glass-effect border-0 bg-gradient-to-br ${stat.bgGradient} hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer`}
+              className="text-center group animate-scale-in glass-effect border-0 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="p-6">
                 <div className={`w-16 h-16 bg-gradient-to-r ${stat.iconColor} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                   <stat.icon className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-4xl font-bold mb-2 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent">{stat.number}</div>
-                <div className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">{stat.label}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">{stat.description}</div>
+                <div className="text-4xl font-bold mb-2 text-foreground">{stat.number}</div>
+                <div className="text-xl font-semibold mb-2">{stat.label}</div>
+                <div className="text-sm text-muted-foreground">{stat.description}</div>
               </div>
             </Card>
           ))}

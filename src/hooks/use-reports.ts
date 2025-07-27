@@ -117,7 +117,7 @@ export function useReports(): UseReportsReturn {
       ];
 
       if (!allowedTypes.includes(file.type)) {
-        throw new Error('Unsupported file type. Please upload PDF, image, or text files.');
+        throw new Error('Unsupported file type. Please upload PDF, image, text, or Word document files.');
       }
 
       console.log(`Uploading ${file.name} (${file.type}, ${(file.size / 1024 / 1024).toFixed(2)}MB)`);
@@ -178,22 +178,28 @@ export function useReports(): UseReportsReturn {
   // Delete report
   const deleteReport = useCallback(async (id: string): Promise<boolean> => {
     try {
+      console.log(`Frontend: Starting delete for report ${id}`);
       setError(null);
       
       const response = await fetch(`/api/ai/reports?id=${id}`, {
         method: 'DELETE'
       });
 
+      console.log(`Frontend: Delete response status: ${response.status}`);
+
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('Frontend: Delete failed with error:', errorData);
         throw new Error(errorData.error || 'Failed to delete report');
       }
 
       const data = await response.json();
+      console.log('Frontend: Delete response data:', data);
+      
       if (data.success) {
         // Remove from state
         setReports(prev => prev.filter(report => report._id !== id));
-        console.log(`Report ${id} deleted successfully`);
+        console.log(`Frontend: Report ${id} removed from state successfully`);
         return true;
       } else {
         throw new Error(data.error || 'Failed to delete report');

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import connectDB from '@/lib/db';
 import ChatSession, { IChatMessage } from '@/models/ai/ChatSession';
 import MedicalReport from '@/models/ai/MedicalReport';
@@ -38,6 +39,39 @@ async function verifyToken(request: NextRequest): Promise<string | null> {
   }
 }
 
+async function generateChatTitle(message: string, sessionType: 'report' | 'medication'): Promise<string> {
+  try {
+    const aiService = createAIService(DEFAULT_AI_CONFIG);
+    
+    const titlePrompt = sessionType === 'medication' 
+      ? `Generate a short, specific title (max 50 characters) for a medication consultation based on this user message: "${message}". Focus on the main medication or health concern mentioned. Examples: "Metformin Side Effects", "Blood Pressure Medication", "Antibiotic Questions". Return only the title, nothing else.`
+      : `Generate a short, specific title (max 50 characters) for a medical report analysis based on this user message: "${message}". Focus on the main medical concern or report type mentioned. Examples: "Blood Test Results", "X-Ray Analysis", "Liver Function Report". Return only the title, nothing else.`;
+
+    const response = await aiService.generateChatCompletion([
+      { role: 'system', content: 'You are a helpful assistant that generates concise, specific titles for medical conversations.' },
+      { role: 'user', content: titlePrompt }
+    ]);
+
+    let title = response.content.trim();
+    
+    // Clean up the title - remove quotes and limit length
+    title = title.replace(/["""]/g, '').trim();
+    if (title.length > 50) {
+      title = title.substring(0, 47) + '...';
+    }
+    
+    // Fallback to default if title is too generic or empty
+    if (!title || title.length < 3 || title.toLowerCase().includes('title') || title.toLowerCase().includes('analysis')) {
+      return sessionType === 'medication' ? 'Medication Consultation' : 'Medical Report Analysis';
+    }
+    
+    return title;
+  } catch (error) {
+    console.error('Error generating chat title:', error);
+    return sessionType === 'medication' ? 'Medication Consultation' : 'Medical Report Analysis';
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
@@ -59,18 +93,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Convert userId to ObjectId for proper comparison
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+
     // Find or create chat session
     let chatSession = await ChatSession.findOne({ 
-      userId, 
+      userId: userObjectId, 
       sessionId,
       isActive: true 
     });
 
     if (!chatSession) {
       // Determine session type from sessionId or provided type
-      let sessionType = 'report'; // default
+      let sessionType: 'report' | 'medication' = 'report'; // default
       
-      if (type) {
+      if (type === 'medication' || type === 'report') {
         sessionType = type;
       } else if (sessionId.includes('medication')) {
         sessionType = 'medication';
@@ -78,13 +115,27 @@ export async function POST(request: NextRequest) {
       
       console.log(`Creating new chat session: ${sessionId}, type: ${sessionType}, provided type: ${type}, sessionId contains medication: ${sessionId.includes('medication')}`);
       
+      // Generate title based on first message
+      let title = sessionType === 'medication' 
+        ? 'Medication Information Check'
+        : 'Medical Report Analysis';
+
+      // If this is the first message, generate a more specific title
+      if (message && message.length > 10) {
+        try {
+          title = await generateChatTitle(message, sessionType);
+          console.log(`Generated dynamic title: ${title}`);
+        } catch (error) {
+          console.error('Failed to generate title:', error);
+          // Keep default title
+        }
+      }
+      
       chatSession = new ChatSession({
-        userId,
+        userId: userObjectId,
         sessionId,
         type: sessionType,
-        title: sessionType === 'medication' 
-          ? 'Medication Information Check'
-          : 'Medical Report Analysis',
+        title: title,
         messages: []
       });
     } else {
@@ -104,8 +155,9 @@ export async function POST(request: NextRequest) {
     let reportContext = '';
     if (chatSession.type === 'report' || sessionId.includes('report')) {
       try {
+        const userObjectId = new mongoose.Types.ObjectId(userId);
         const latestReport = await MedicalReport.findOne({ 
-          userId,
+          userId: userObjectId,
           analysisStatus: 'completed'
         }).sort({ uploadedAt: -1 });
 
@@ -202,12 +254,15 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get('sessionId');
+    
+    // Convert userId to ObjectId for proper comparison
+    const userObjectId = new mongoose.Types.ObjectId(userId);
 
     if (!sessionId) {
       // Get all chat sessions for user
       console.log('Chat GET API: Fetching all sessions for user:', userId);
       const sessions = await ChatSession.find({ 
-        userId, 
+        userId: userObjectId, 
         isActive: true 
       })
         .select('sessionId title type createdAt updatedAt messages')
@@ -228,19 +283,22 @@ export async function GET(request: NextRequest) {
       });
     } else {
       // Get specific chat session
+      console.log('Chat GET API: Fetching session:', sessionId, 'for user:', userId);
       const session = await ChatSession.findOne({ 
-        userId, 
+        userId: userObjectId, 
         sessionId,
         isActive: true 
       });
 
       if (!session) {
+        console.log('Chat GET API: Session not found:', sessionId);
         return NextResponse.json(
           { error: 'Session not found' }, 
           { status: 404 }
         );
       }
 
+      console.log('Chat GET API: Found session with', session.messages.length, 'messages');
       return NextResponse.json({
         success: true,
         session: {

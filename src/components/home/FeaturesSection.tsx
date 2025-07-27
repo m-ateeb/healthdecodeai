@@ -37,11 +37,11 @@ export function FeaturesSection() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-lime-50 via-cyan-25 to-blue-50 dark:from-lime-950 dark:via-cyan-950 dark:to-slate-900">
+    <section className="py-20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Why Choose HealthWise AI?
+            Why Choose HealthDecodeAI?
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Experience the future of healthcare with our comprehensive AI-powered platform
@@ -52,7 +52,7 @@ export function FeaturesSection() {
           {features.map((feature, index) => (
             <Card 
               key={index} 
-              className="group hover:shadow-lg transition-all duration-300 hover:scale-105 animate-scale-in"
+              className="glass-effect group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 animate-scale-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <CardHeader>

@@ -38,7 +38,7 @@ export function validateMedicalReportFile(file: File): FileValidationResult {
   if (!ALLOWED_FILE_TYPES[file.type as keyof typeof ALLOWED_FILE_TYPES]) {
     return {
       isValid: false,
-      error: `File type "${file.type}" is not supported. Please upload PDF, image, or document files.`
+      error: `File type "${file.type}" is not supported. Please upload PDF, image, text, or Word document files.`
     };
   }
 

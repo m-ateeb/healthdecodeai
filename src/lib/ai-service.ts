@@ -175,7 +175,7 @@ export class MockAIService {
         "Can you describe your symptoms in more detail? This will help me provide better general guidance.";
     } else if (userContent.includes('upload') || userContent.includes('report')) {
       response = "I can help analyze medical reports, lab results, and imaging studies. " +
-        "You can upload documents in PDF, image, or text format, and I'll extract key information and provide insights in simple terms. " +
+        "You can upload documents in PDF, image, text, or Word document format, and I'll extract key information and provide insights in simple terms. " +
         "Would you like to upload a report for analysis?";
     } else if (userContent.includes('hello') || userContent.includes('hi')) {
       response = "Hello! I'm your HealthWise AI assistant. I'm here to help you understand medical reports, " +

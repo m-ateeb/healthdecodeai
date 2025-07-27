@@ -32,7 +32,7 @@ export function TestimonialsSection() {
   ];
 
   return (
-      <section className="relative py-20 bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden">
+      <section className="relative py-20 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -47,7 +47,7 @@ export function TestimonialsSection() {
           {testimonials.map((testimonial, index) => (
             <Card 
               key={index} 
-              className={`hover:shadow-2xl transition-all duration-300 hover:scale-105 animate-slide-up glass-effect border-0 bg-gradient-to-br ${testimonial.bgGradient} cursor-pointer`}
+              className="glass-effect hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 animate-slide-up cursor-pointer"
               style={{ animationDelay: `${index * 0.2}s` }}
             >
               <CardContent className="p-6">

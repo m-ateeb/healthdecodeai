@@ -144,7 +144,7 @@ function DashboardContent() {
         setUploadProgress(null);
         console.error('Upload failed:', error);
         // Show user-friendly error
-        alert('Upload failed. Please try again or check if the file format is supported (PDF, JPG, PNG, TXT).');
+        alert('Upload failed. Please try again or check if the file format is supported (PDF, JPG, PNG, TXT, DOC, DOCX).');
       }
     }
     // Reset file input
@@ -328,7 +328,7 @@ function DashboardContent() {
                     <div className="border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-xl p-8 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors group-hover:bg-blue-50 dark:group-hover:bg-blue-900/10">
                       <Input
                         type="file"
-                        accept=".pdf,.jpg,.jpeg,.png,.txt"
+                        accept=".pdf,.jpg,.jpeg,.png,.txt,.doc,.docx"
                         onChange={handleFileUpload}
                         className="hidden"
                         id="file-upload"
@@ -344,7 +344,7 @@ function DashboardContent() {
                           {isUploading ? 'Uploading & analyzing...' : 'Click to upload or drag and drop'}
                         </p>
                         <p className="text-sm text-gray-500">
-                          PDF, JPG, PNG or TXT files • Max 10MB
+                          JPG, PNG, • Max 10MB
                         </p>
                       </Label>
                       
@@ -380,29 +380,18 @@ function DashboardContent() {
                         <MessageSquare className="w-5 h-5 mr-2" />
                         Start Report Chat
                       </Button>
+                      {/* {reportSessions.length > 0 && (
+                        <Button 
+                          variant="outline"
+                          size="lg"
+                          onClick={() => setActiveTab('report-history')}
+                          className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                        >
+                          <History className="w-5 h-5 mr-2" />
+                          History ({reportSessions.length})
+                        </Button>
+                      )} */}
                     </div>
-                    {reportSessions.length > 0 && (
-                      <div className="mt-4">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Recent report analyses:</p>
-                        <div className="space-y-2">
-                          {reportSessions.slice(0, 3).map((session) => (
-                            <div key={session.sessionId} className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                              <span className="text-sm font-medium">{session.title}</span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  setCurrentReportSession(session.sessionId);
-                                  setActiveTab('report-chat');
-                                }}
-                              >
-                                Continue
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
 
@@ -443,42 +432,33 @@ function DashboardContent() {
                         </li>
                       </ul>
                     </div>
-                    <Button 
-                      onClick={handleStartMedicationCheck}
-                      className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white"
-                      size="lg"
-                    >
-                      <PillIcon className="w-5 h-5 mr-2" />
-                      Start Medication Chat
-                    </Button>
-                    {medicationSessions.length > 0 && (
-                      <div className="mt-4">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Recent medication chats:</p>
-                        <div className="space-y-2">
-                          {medicationSessions.slice(0, 3).map((session) => (
-                            <div key={session.sessionId} className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                              <span className="text-sm font-medium">{session.title}</span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  setCurrentMedicationSession(session.sessionId);
-                                  setActiveTab('medication-chat');
-                                }}
-                              >
-                                Continue
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    <div className="flex space-x-3">
+                      <Button 
+                        onClick={handleStartMedicationCheck}
+                        className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white"
+                        size="lg"
+                      >
+                        <PillIcon className="w-5 h-5 mr-2" />
+                        Start Medication Chat
+                      </Button>
+                      {medicationSessions.length > 0 && (
+                        <Button 
+                          variant="outline"
+                          size="lg"
+                          onClick={() => setActiveTab('medication-history')}
+                          className="border-green-600 text-green-600 hover:bg-green-50"
+                        >
+                          <History className="w-5 h-5 mr-2" />
+                          History ({medicationSessions.length})
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Recent Activity */}
-              <Card className="glass-effect border-0 animate-fade-in">
+              {/* <Card className="glass-effect border-0 animate-fade-in">
                 <CardHeader>
                   <CardTitle className="flex items-center text-xl">
                     <History className="h-6 w-6 mr-3 text-gray-600" />
@@ -509,71 +489,8 @@ function DashboardContent() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {/* Recent Reports */}
-                      {reports.slice(0, 3).map((report) => (
-                        <div key={report._id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-                          <div className="flex items-center space-x-4">
-                            <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                              <FileText className="h-5 w-5 text-blue-600" />
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-900 dark:text-gray-100">{report.originalName}</p>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">{report.reportType} • {format(report.uploadedAt, 'MMM dd, yyyy')}</p>
-                              {report.aiAnalysis?.summary && (
-                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{report.aiAnalysis.summary}</p>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-3">
-                            <Badge 
-                              variant={report.analysisStatus === 'completed' ? 'default' : 'secondary'}
-                              className={
-                                report.analysisStatus === 'completed' 
-                                  ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200' 
-                                  : report.analysisStatus === 'processing'
-                                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200'
-                                  : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-200'
-                              }
-                            >
-                              {report.analysisStatus === 'completed' ? 'Analyzed' : 
-                               report.analysisStatus === 'processing' ? 'Processing' : 
-                               report.analysisStatus === 'pending' ? 'Pending' : 'Failed'}
-                            </Badge>
-                            {report.analysisStatus === 'completed' && (
-                              <Button variant="ghost" size="sm" onClick={handleStartReportAnalysis}>
-                                Discuss
-                              </Button>
-                            )}
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Delete Report?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This will permanently delete the report "{report.originalName}". This action cannot be undone.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction 
-                                    onClick={() => handleDeleteReport(report._id)}
-                                    className="bg-red-600 hover:bg-red-700"
-                                  >
-                                    Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
-                        </div>
-                      ))}
-                      
-                      {/* Recent Chat Sessions */}
-                      {sessions.slice(0, 2).map((session) => (
+                      {/* Recent Chat Sessions - Both Report and Medication /}
+                      {sessions.slice(0, 3).map((session) => (
                         <div key={session.sessionId} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
                           <div className="flex items-center space-x-4">
                             <div className={`p-2 rounded-lg ${session.type === 'report' ? 'bg-blue-100 dark:bg-blue-900/20' : 'bg-green-100 dark:bg-green-900/20'}`}>
@@ -586,7 +503,7 @@ function DashboardContent() {
                             <div>
                               <p className="font-medium text-gray-900 dark:text-gray-100">{session.title}</p>
                               <p className="text-sm text-gray-500 dark:text-gray-400">
-                                {session.type === 'report' ? 'Report Analysis' : 'Medication Info'} • {format(session.updatedAt, 'MMM dd, yyyy')}
+                                {session.type === 'report' ? 'Report Analysis' : 'Medication Consultation'} • {format(session.updatedAt, 'MMM dd, yyyy')}
                               </p>
                               <p className="text-sm text-gray-600 dark:text-gray-300">{session.messages.length} messages</p>
                             </div>
@@ -606,14 +523,14 @@ function DashboardContent() {
                               }
                             }}
                           >
-                            Continue
+                            Open
                           </Button>
                         </div>
                       ))}
                     </div>
                   )}
                 </CardContent>
-              </Card>
+              </Card> */}
             </TabsContent>
 
             {/* Report Analysis Chat Tab */}

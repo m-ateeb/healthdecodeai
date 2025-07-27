@@ -38,13 +38,13 @@ const About = () => {
   ];
 
   const team = [
-    {
-      name: "Dr. Emily Chen",
-      role: "Chief Executive Officer",
-      bio: "Former Chief Medical Officer at Johns Hopkins, leading digital health innovation for over 15 years.",
-      image: "photo-1594824663954-9d17155e6c8e",
-      achievements: ["15+ years experience", "Johns Hopkins alumni", "Healthcare innovator"]
-    },
+    // {
+    //   name: "Dr. Emily Chen",
+    //   role: "Chief Executive Officer",
+    //   bio: "Former Chief Medical Officer at Johns Hopkins, leading digital health innovation for over 15 years.",
+    //   image: "photo-1594824663317-b4c3c4e45532",
+    //   achievements: ["15+ years experience", "Johns Hopkins alumni", "Healthcare innovator"]
+    // },
     {
       name: "Dr. Michael Rodriguez",
       role: "Chief Technology Officer", 
@@ -154,56 +154,56 @@ const About = () => {
       </section>
 
       {/* Mission Section */}
-      <section className="py-20 bg-background">
+      <section className="py-16 md:py-20 bg-background">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="animate-slide-up">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="animate-slide-up order-2 lg:order-1">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
                 Our Mission
               </h2>
-              <p className="text-lg text-muted-foreground mb-6">
+              <p className="text-base md:text-lg text-muted-foreground mb-4 md:mb-6">
                 HealthDecodeAI was founded on the belief that everyone deserves access to quality healthcare, regardless of their location or circumstances. We&apos;re leveraging cutting-edge artificial intelligence to break down barriers and create a world where healthcare is truly universal.
               </p>
-              <p className="text-lg text-muted-foreground mb-8">
+              <p className="text-base md:text-lg text-muted-foreground mb-6 md:mb-8">
                 Our team of world-class physicians, AI researchers, and healthcare experts work tirelessly to develop solutions that not only advance medical science but also improve real patient outcomes every day.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/signup">
-                  <Button size="lg" className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white">
+                  <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white">
                     Join Our Mission
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/features">
-                  <Button size="lg" variant="outline" className="hover:bg-blue-50 dark:hover:bg-blue-950">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto hover:bg-blue-50 dark:hover:bg-blue-950">
                     Learn More
                   </Button>
                 </Link>
               </div>
             </div>
-            <div className="relative animate-scale-in glass-effect rounded-2xl p-6" style={{ animationDelay: '0.2s' }}>
+            <div className="relative animate-scale-in glass-effect rounded-2xl p-4 md:p-6 order-1 lg:order-2" style={{ animationDelay: '0.2s' }}>
               <Image 
                 src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&h=400&fit=crop"
                 alt="Modern healthcare technology and AI innovation"
-                className="rounded-xl shadow-2xl w-full h-[400px] object-cover"
+                className="rounded-xl shadow-2xl w-full h-[250px] md:h-[300px] lg:h-[400px] object-cover"
                 width={600}
                 height={400}
               />
-              <div className="absolute inset-6 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+              <div className="absolute inset-4 md:inset-6 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
               
               {/* Floating stats overlay */}
-              <div className="absolute bottom-8 left-8 right-8">
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg p-3">
-                    <div className="text-2xl font-bold text-blue-600">99.5%</div>
+              <div className="absolute bottom-6 md:bottom-8 left-4 md:left-8 right-4 md:right-8">
+                <div className="grid grid-cols-3 gap-2 md:gap-4">
+                  <div className="text-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg p-2 md:p-3">
+                    <div className="text-lg md:text-2xl font-bold text-blue-600">99.5%</div>
                     <div className="text-xs text-gray-600 dark:text-gray-400">Accuracy</div>
                   </div>
-                  <div className="text-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg p-3">
-                    <div className="text-2xl font-bold text-green-600">1M+</div>
+                  <div className="text-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg p-2 md:p-3">
+                    <div className="text-lg md:text-2xl font-bold text-green-600">1M+</div>
                     <div className="text-xs text-gray-600 dark:text-gray-400">Users</div>
                   </div>
-                  <div className="text-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg p-3">
-                    <div className="text-2xl font-bold text-purple-600">50+</div>
+                  <div className="text-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg p-2 md:p-3">
+                    <div className="text-lg md:text-2xl font-bold text-purple-600">50+</div>
                     <div className="text-xs text-gray-600 dark:text-gray-400">Countries</div>
                   </div>
                 </div>
@@ -342,18 +342,18 @@ const About = () => {
       </section>
 
       {/* Team Section */}
-    <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <section className="py-16 md:py-20 bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16 animate-fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <div className="text-center mb-12 md:mb-16 animate-fade-in">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
               Meet Our Team
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base md:text-lg xl:text-xl text-muted-foreground max-w-2xl mx-auto">
               The brilliant minds behind HealthDecodeAI&apos;s innovation
             </p>
           </div>
           
-          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 md:gap-6 lg:gap-8">
             {team.map((member, index) => (
               <Card 
                 key={index} 
@@ -364,25 +364,25 @@ const About = () => {
                   <Image 
                     src={`https://images.unsplash.com/${member.image}?w=300&h=300&fit=crop&crop=face`}
                     alt={member.name}
-                    className="w-full h-40 md:h-48 object-cover"
+                    className="w-full h-32 sm:h-40 md:h-48 object-cover"
                     width={300}
                     height={300}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                   
                   {/* Professional badge overlay */}
-                  <div className="absolute top-3 md:top-4 right-3 md:right-4">
-                    <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center shadow-lg">
-                      <Heart className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                  <div className="absolute top-2 md:top-3 lg:top-4 right-2 md:right-3 lg:right-4">
+                    <div className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center shadow-lg">
+                      <Heart className="w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 text-white" />
                     </div>
                   </div>
                 </div>
-                <CardHeader className="pb-2 px-4 md:px-6">
-                  <CardTitle className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">{member.name}</CardTitle>
-                  <Badge variant="secondary" className="mx-auto bg-gradient-to-r from-blue-100 to-green-100 text-blue-800 dark:from-blue-900 dark:to-green-900 dark:text-blue-200 text-xs md:text-sm">{member.role}</Badge>
+                <CardHeader className="pb-2 px-3 md:px-4 lg:px-6">
+                  <CardTitle className="text-base md:text-lg lg:text-xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">{member.name}</CardTitle>
+                  <Badge variant="secondary" className="mx-auto bg-gradient-to-r from-blue-100 to-green-100 text-blue-800 dark:from-blue-900 dark:to-green-900 dark:text-blue-200 text-xs">{member.role}</Badge>
                 </CardHeader>
-                <CardContent className="px-4 md:px-6">
-                  <p className="text-xs md:text-sm text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">{member.bio}</p>
+                <CardContent className="px-3 md:px-4 lg:px-6">
+                  <p className="text-xs text-gray-700 dark:text-gray-300 mb-3 md:mb-4 leading-relaxed">{member.bio}</p>
                   <div className="flex flex-wrap gap-1 justify-center">
                     {member.achievements.map((achievement, i) => (
                       <Badge key={i} variant="outline" className="text-xs hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import connectDB from '@/lib/db';
 import ChatSession from '@/models/ai/ChatSession';
 
@@ -39,8 +40,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type'); // 'report' or 'medication'
     
+    // Convert userId to ObjectId for proper comparison
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+    
     const filter: any = { 
-      userId, 
+      userId: userObjectId, 
       isActive: true 
     };
     
@@ -101,14 +105,21 @@ export async function DELETE(request: NextRequest) {
     const type = searchParams.get('type');
     const action = searchParams.get('action');
 
+    // Convert userId to ObjectId for proper comparison
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+
+    console.log('History DELETE:', { sessionId, type, action, userId });
+
     if (sessionId) {
       // Delete specific session
+      console.log(`Deleting session ${sessionId} for user ${userId}`);
       const result = await ChatSession.findOneAndUpdate(
-        { userId, sessionId, isActive: true },
+        { userId: userObjectId, sessionId, isActive: true },
         { isActive: false },
         { new: true }
       );
 
+      console.log('Delete session result:', !!result);
       if (!result) {
         return NextResponse.json({ error: 'Session not found' }, { status: 404 });
       }
@@ -121,11 +132,13 @@ export async function DELETE(request: NextRequest) {
 
     } else if (type && action === 'clear' && (type === 'report' || type === 'medication')) {
       // Clear all sessions of specific type
+      console.log(`Clearing all ${type} sessions for user ${userId}`);
       const result = await ChatSession.updateMany(
-        { userId, type, isActive: true },
+        { userId: userObjectId, type, isActive: true },
         { isActive: false }
       );
 
+      console.log(`Clear all result: modified ${result.modifiedCount} sessions`);
       return NextResponse.json({
         success: true,
         message: `All ${type} sessions cleared successfully`,

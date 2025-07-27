@@ -10,7 +10,7 @@ export function Footer() {
     { name: 'Features', href: '/features' },
     { name: 'Services', href: '/services' },
     { name: 'Contact', href: '/contact' },
-    { name: 'Dashboard', href: '/dashboard' }
+
   ];
 
   const services = [
@@ -40,7 +40,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-gradient-to-b from-gray-900 to-gray-950 text-white">
+    <footer className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 text-gray-900 dark:text-white">
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -50,25 +50,25 @@ export function Footer() {
               <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-500 rounded-xl flex items-center justify-center">
                 <Heart className="w-6 h-6 text-white" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 dark:from-blue-400 dark:to-green-400 bg-clip-text text-transparent">
                 HealthDecodeAI
               </span>
             </div>
-            <p className="text-gray-300 leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
               Empowering individuals with AI-driven healthcare insights. Making medical information accessible, 
               understandable, and actionable for everyone.
             </p>
             <div className="space-y-3">
-              <div className="flex items-center space-x-3 text-gray-300">
-                <Mail className="w-5 h-5 text-blue-400" />
+              <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
+                <Mail className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 <span>support@healthdecodeai.com</span>
               </div>
-              <div className="flex items-center space-x-3 text-gray-300">
-                <Phone className="w-5 h-5 text-green-400" />
+              <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
+                <Phone className="w-5 h-5 text-green-500 dark:text-green-400" />
                 <span>+1 (555) 123-4567</span>
               </div>
-              <div className="flex items-center space-x-3 text-gray-300">
-                <MapPin className="w-5 h-5 text-red-400" />
+              <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
+                <MapPin className="w-5 h-5 text-red-500 dark:text-red-400" />
                 <span>123 Health St, Medical District, NY 10001</span>
               </div>
             </div>
@@ -76,15 +76,15 @@ export function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-white">Quick Links</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Quick Links</h3>
             <ul className="space-y-3">
               {quickLinks.map((link, index) => (
                 <li key={index}>
                   <Link 
                     href={link.href}
-                    className="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center group"
+                    className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center group"
                   >
-                    <span className="w-2 h-2 bg-blue-400 rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+                    <span className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
                     {link.name}
                   </Link>
                 </li>
@@ -94,15 +94,15 @@ export function Footer() {
 
           {/* Services */}
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-white">Our Services</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Our Services</h3>
             <ul className="space-y-3">
               {services.map((service, index) => (
                 <li key={index}>
                   <Link 
                     href={service.href}
-                    className="text-gray-300 hover:text-green-400 transition-colors duration-200 flex items-center group"
+                    className="text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200 flex items-center group"
                   >
-                    <span className="w-2 h-2 bg-green-400 rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+                    <span className="w-2 h-2 bg-green-600 dark:bg-green-400 rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
                     {service.name}
                   </Link>
                 </li>
@@ -112,15 +112,15 @@ export function Footer() {
 
           {/* Legal & Social */}
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-white">Legal & Compliance</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Legal & Compliance</h3>
             <ul className="space-y-3">
               {legalLinks.map((legal, index) => (
                 <li key={index}>
                   <Link 
                     href={legal.href}
-                    className="text-gray-300 hover:text-purple-400 transition-colors duration-200 flex items-center group"
+                    className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200 flex items-center group"
                   >
-                    <span className="w-2 h-2 bg-purple-400 rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+                    <span className="w-2 h-2 bg-purple-600 dark:bg-purple-400 rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
                     {legal.name}
                   </Link>
                 </li>
@@ -129,13 +129,13 @@ export function Footer() {
             
             {/* Social Media */}
             <div className="pt-4">
-              <h4 className="text-lg font-medium text-white mb-4">Follow Us</h4>
+              <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Follow Us</h4>
               <div className="flex space-x-4">
                 {socialLinks.map((social, index) => (
                   <a
                     key={index}
                     href={social.href}
-                    className={`text-gray-400 ${social.color} transition-colors duration-200 hover:scale-110 transform`}
+                    className={`text-gray-500 dark:text-gray-400 ${social.color} transition-colors duration-200 hover:scale-110 transform`}
                     aria-label={social.name}
                   >
                     <social.icon className="w-6 h-6" />
@@ -148,20 +148,20 @@ export function Footer() {
       </div>
 
       {/* Newsletter Subscription */}
-      <div className="border-t border-gray-800">
+      <div className="border-t border-gray-200 dark:border-gray-800">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-2xl font-semibold text-white mb-4">
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
               Stay Updated with Health Insights
             </h3>
-            <p className="text-gray-300 mb-6">
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
               Subscribe to our newsletter for the latest AI health trends, tips, and platform updates.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email address"
-                className="flex-1 px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-4 py-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-green-600 transition-all duration-200 hover:scale-105">
                 Subscribe
@@ -172,19 +172,17 @@ export function Footer() {
       </div>
 
       {/* Bottom Footer */}
-      <div className="border-t border-gray-800 bg-gray-950">
+      <div className="border-t border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-950">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-gray-400 text-sm">
-              © 2025 HealthDecodeAI. All rights reserved. | Built with ❤️ for better healthcare.
+            <div className="text-gray-500 dark:text-gray-400 text-sm">
+              © 2025 HealthDecodeAI. All rights reserved.
             </div>
-            <div className="flex items-center space-x-6 text-sm text-gray-400">
+            <div className="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400">
               <span className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full animate-pulse"></div>
                 <span>System Status: All Systems Operational</span>
               </span>
-              <span>HIPAA Compliant</span>
-              <span>SOC 2 Certified</span>
             </div>
           </div>
         </div>

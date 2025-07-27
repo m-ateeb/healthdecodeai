@@ -182,7 +182,7 @@ export function FileUploadDropzone({
               Drag and drop your file here, or click to browse
             </p>
             <p className="text-sm text-muted-foreground">
-              Supports PDF, images (JPG, PNG), and documents up to 10MB
+              Supports PDF, images (JPG, PNG), text files (TXT), and Word documents (DOC, DOCX) up to 10MB
             </p>
           </CardContent>
         </Card>

@@ -7,22 +7,22 @@ import Link from 'next/link';
 export function Hero() {
   return (
     <div className="mt-16 relative py-20 lg:py-32 flex items-center justify-center overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-indigo-900">
+      {/* Simplified background */}
+      <div className="absolute inset-0">
         <div className="absolute inset-0 opacity-30" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='30'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
         }}></div>
       </div>
 
-      {/* Floating elements */}
+      {/* Floating elements with glass effect */}
       <div className="absolute top-10 left-10 animate-float">
-        <div className="w-20 h-20 bg-blue-200 rounded-full opacity-20 dark:bg-blue-800"></div>
+        <div className="w-20 h-20 bg-blue-500/10 dark:bg-blue-400/10 rounded-full backdrop-blur-sm"></div>
       </div>
       <div className="absolute top-32 right-20 animate-float" style={{animationDelay: '2s'}}>
-        <div className="w-16 h-16 bg-green-200 rounded-full opacity-20 dark:bg-green-800"></div>
+        <div className="w-16 h-16 bg-green-500/10 dark:bg-green-400/10 rounded-full backdrop-blur-sm"></div>
       </div>
       <div className="absolute bottom-20 left-20 animate-float" style={{animationDelay: '4s'}}>
-        <div className="w-12 h-12 bg-purple-200 rounded-full opacity-20 dark:bg-purple-800"></div>
+        <div className="w-12 h-12 bg-purple-500/10 dark:bg-purple-400/10 rounded-full backdrop-blur-sm"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
