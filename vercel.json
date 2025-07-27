@@ -1,12 +1,16 @@
 {
   "functions": {
     "app/api/**/route.ts": {
-      "maxDuration": 30
+      "maxDuration": 30,
+      "runtime": "nodejs18.x"
     }
   },
   "env": {
     "NEXT_PUBLIC_APP_NAME": "HealthDecodeAI",
     "NEXT_PUBLIC_APP_URL": "https://healthdecodeai.vercel.app",
-    "NEXT_PUBLIC_API_URL": "/api"
+    "NEXT_PUBLIC_API_URL": "/api",
+    "JWT_SECRET": "@jwt_secret",
+    "MONGODB_URI": "@mongodb_uri",
+    "GEMINI_API_KEY": "@gemini_api_key"
   }
 }
