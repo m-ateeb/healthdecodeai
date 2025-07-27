@@ -1,0 +1,18 @@
+{
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_APP_NAME": "HealthDecodeAI",
+    "NEXT_PUBLIC_APP_URL": "https://healthdecodeai.vercel.app",
+    "NEXT_PUBLIC_API_URL": "/api"
+  },
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  }
+}

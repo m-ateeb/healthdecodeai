@@ -286,7 +286,7 @@ export function createAIService(config: AIConfig) {
 // Default configuration using Gemini
 export const DEFAULT_AI_CONFIG: AIConfig = {
   provider: 'gemini',
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.GEMINI_API_KEY || undefined,
   model: 'gemini-1.5-flash',
   maxTokens: 1000,
   temperature: 0.7
