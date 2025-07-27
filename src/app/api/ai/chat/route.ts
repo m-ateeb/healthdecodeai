@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import connectDB from '@/lib/db';
 import ChatSession, { IChatMessage } from '@/models/ai/ChatSession';
 import MedicalReport from '@/models/ai/MedicalReport';
-import { createAIService, DEFAULT_AI_CONFIG, HEALTH_PROMPTS, ChatCompletionMessage } from '@/lib/ai-service';
+import { createAIService, DEFAULT_AI_CONFIG, HEALTH_PROMPTS, ChatCompletionMessage, AIResponse } from '@/lib/ai-service';
 
 interface JWTPayload {
   userId: string;
@@ -74,19 +74,60 @@ async function generateChatTitle(message: string, sessionType: 'report' | 'medic
 
 export async function POST(request: NextRequest) {
   try {
-    await connectDB();
+    console.log('=== Chat API POST Request Started ===');
+    
+    // Validate required environment variables
+    if (!process.env.JWT_SECRET) {
+      console.error('JWT_SECRET environment variable is missing');
+      return NextResponse.json({ error: 'Server configuration error: JWT_SECRET missing' }, { status: 500 });
+    }
+    
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('GEMINI_API_KEY environment variable is missing');
+      return NextResponse.json({ error: 'AI service unavailable' }, { status: 503 });
+    }
+    
+    if (!process.env.MONGODB_URI) {
+      console.error('MONGODB_URI environment variable is missing');
+      return NextResponse.json({ error: 'Database configuration error' }, { status: 500 });
+    }
+    
+    // Check environment variables
+    console.log('Environment check:', {
+      hasJWTSecret: !!process.env.JWT_SECRET,
+      hasGeminiKey: !!process.env.GEMINI_API_KEY,
+      hasMongoURI: !!process.env.MONGODB_URI
+    });
+    
+    // Connect to database with timeout
+    try {
+      await Promise.race([
+        connectDB(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Database connection timeout')), 10000))
+      ]);
+    } catch (dbError) {
+      console.error('Database connection failed:', dbError);
+      return NextResponse.json({ error: 'Database connection failed' }, { status: 503 });
+    }
     
     const userId = await verifyToken(request);
     if (!userId) {
+      console.log('Authorization failed - no valid user ID');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
     const { message, sessionId, type } = body;
     
-    console.log('Chat API request body:', { message: message?.substring(0, 50) + '...', sessionId, type });
+    console.log('Chat API request body:', { 
+      message: message?.substring(0, 50) + '...', 
+      sessionId, 
+      type,
+      userId: userId.substring(0, 8) + '...' 
+    });
 
     if (!message || !sessionId) {
+      console.log('Missing required fields:', { hasMessage: !!message, hasSessionId: !!sessionId });
       return NextResponse.json(
         { error: 'Message and sessionId are required' }, 
         { status: 400 }
@@ -94,7 +135,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Convert userId to ObjectId for proper comparison
-    const userObjectId = new mongoose.Types.ObjectId(userId);
+    let userObjectId;
+    try {
+      userObjectId = new mongoose.Types.ObjectId(userId);
+    } catch (objectIdError) {
+      console.error('Invalid userId format:', userId, objectIdError);
+      return NextResponse.json({ error: 'Invalid user ID format' }, { status: 400 });
+    }
 
     // Find or create chat session
     let chatSession = await ChatSession.findOne({ 
@@ -155,7 +202,7 @@ export async function POST(request: NextRequest) {
     let reportContext = '';
     if (chatSession.type === 'report' || sessionId.includes('report')) {
       try {
-        const userObjectId = new mongoose.Types.ObjectId(userId);
+        // Use the same userObjectId we already validated
         const latestReport = await MedicalReport.findOne({ 
           userId: userObjectId,
           analysisStatus: 'completed'
@@ -184,6 +231,7 @@ Please use this medical report information to answer the user's questions about 
         }
       } catch (error) {
         console.error('Error fetching medical report context:', error);
+        // Continue without report context if there's an error
       }
     }
 
@@ -200,9 +248,47 @@ Please use this medical report information to answer the user's questions about 
       }))
     ];
 
-    // Get AI response
-    const aiService = createAIService(DEFAULT_AI_CONFIG);
-    const aiResponse = await aiService.generateChatCompletion(messages);
+    // Get AI response with error handling
+    let aiResponse: AIResponse;
+    try {
+      const aiService = createAIService(DEFAULT_AI_CONFIG);
+      aiResponse = await Promise.race([
+        aiService.generateChatCompletion(messages),
+        new Promise<AIResponse>((_, reject) => setTimeout(() => reject(new Error('AI service timeout')), 30000))
+      ]) as AIResponse;
+    } catch (aiError) {
+      console.error('AI service error:', aiError);
+      
+      // Return a fallback response instead of failing completely
+      const fallbackResponse = {
+        content: "I apologize, but I'm experiencing technical difficulties right now. Please try again in a moment, or contact support if the issue persists.",
+        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+        model: 'fallback',
+        finishReason: 'error'
+      };
+      
+      // Still save the user message and fallback response
+      const assistantMessage: IChatMessage = {
+        role: 'assistant',
+        content: fallbackResponse.content,
+        timestamp: new Date(),
+        metadata: {
+          model: fallbackResponse.model,
+          usage: fallbackResponse.usage,
+          error: true
+        }
+      };
+
+      chatSession.messages.push(assistantMessage);
+      await chatSession.save();
+      
+      return NextResponse.json({
+        success: false,
+        message: assistantMessage,
+        sessionId: chatSession.sessionId,
+        error: 'AI service temporarily unavailable'
+      }, { status: 503 });
+    }
 
     // Add AI response to session
     const assistantMessage: IChatMessage = {
@@ -242,8 +328,29 @@ Please use this medical report information to answer the user's questions about 
 export async function GET(request: NextRequest) {
   try {
     console.log('Chat GET API: Starting request...');
-    await connectDB();
-    console.log('Chat GET API: Database connected');
+    
+    // Validate required environment variables
+    if (!process.env.JWT_SECRET) {
+      console.error('JWT_SECRET environment variable is missing');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+    
+    if (!process.env.MONGODB_URI) {
+      console.error('MONGODB_URI environment variable is missing');
+      return NextResponse.json({ error: 'Database configuration error' }, { status: 500 });
+    }
+    
+    // Connect to database with timeout
+    try {
+      await Promise.race([
+        connectDB(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Database connection timeout')), 10000))
+      ]);
+      console.log('Chat GET API: Database connected');
+    } catch (dbError) {
+      console.error('Chat GET API: Database connection failed:', dbError);
+      return NextResponse.json({ error: 'Database connection failed' }, { status: 503 });
+    }
     
     const userId = await verifyToken(request);
     console.log('Chat GET API: User ID:', userId);
@@ -256,7 +363,13 @@ export async function GET(request: NextRequest) {
     const sessionId = searchParams.get('sessionId');
     
     // Convert userId to ObjectId for proper comparison
-    const userObjectId = new mongoose.Types.ObjectId(userId);
+    let userObjectId;
+    try {
+      userObjectId = new mongoose.Types.ObjectId(userId);
+    } catch (objectIdError) {
+      console.error('Invalid userId format:', userId, objectIdError);
+      return NextResponse.json({ error: 'Invalid user ID format' }, { status: 400 });
+    }
 
     if (!sessionId) {
       // Get all chat sessions for user
