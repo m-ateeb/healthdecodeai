@@ -203,50 +203,56 @@ function DashboardContent() {
       <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8 animate-fade-in">
-            <div className="flex items-center justify-between mb-4">
+          <div className="mb-6 md:mb-8 animate-fade-in">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-4 space-y-4 lg:space-y-0">
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
                   Welcome back, {user?.firstName || 'User'}! 👋
                 </h1>
-                <p className="text-gray-600 dark:text-gray-300 text-lg mt-2">
+                <p className="text-gray-600 dark:text-gray-300 text-base md:text-lg mt-2">
                   Your AI-powered health insights dashboard
                 </p>
               </div>
-              <div className="flex items-center space-x-3">
-                <Badge variant="outline" className="border-green-500 text-green-600 bg-green-50 dark:bg-green-900/20">
-                  <Heart className="w-4 h-4 mr-1" />
+              <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                <Badge variant="outline" className="border-green-500 text-green-600 bg-green-50 dark:bg-green-900/20 text-xs md:text-sm">
+                  <Heart className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                   Healthy & Active
                 </Badge>
-                <Badge variant="outline" className="border-blue-500 text-blue-600 bg-blue-50 dark:bg-blue-900/20">
-                  <Brain className="w-4 h-4 mr-1" />
+                <Badge variant="outline" className="border-blue-500 text-blue-600 bg-blue-50 dark:bg-blue-900/20 text-xs md:text-sm">
+                  <Brain className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                   AI Ready
                 </Badge>
               </div>
             </div>
           </div>
 
-          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 bg-white dark:bg-gray-800 shadow-lg border-0">
-              <TabsTrigger value="overview" className="flex items-center space-x-2">
-                <Activity className="w-4 h-4" />
-                <span>Overview</span>
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="space-y-4 md:space-y-6">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 bg-white dark:bg-gray-800 shadow-lg border-0 h-auto p-1">
+              <TabsTrigger value="overview" className="flex items-center justify-center space-x-1 md:space-x-2 text-xs md:text-sm px-2 py-3">
+                <Activity className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden sm:inline">Overview</span>
               </TabsTrigger>
-              <TabsTrigger value="report-chat" className="flex items-center space-x-2">
-                <FileText className="w-4 h-4" />
-                <span>Report Analysis</span>
+              <TabsTrigger value="report-chat" className="flex items-center justify-center space-x-1 md:space-x-2 text-xs md:text-sm px-2 py-3">
+                <FileText className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden sm:inline">Report Analysis</span>
+                <span className="sm:hidden">Reports</span>
               </TabsTrigger>
-              <TabsTrigger value="medication-chat" className="flex items-center space-x-2">
-                <PillIcon className="w-4 h-4" />
-                <span>Medication Info</span>
+              <TabsTrigger value="medication-chat" className="flex items-center justify-center space-x-1 md:space-x-2 text-xs md:text-sm px-2 py-3">
+                <PillIcon className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden sm:inline">Medication Info</span>
+                <span className="sm:hidden">Meds</span>
               </TabsTrigger>
-              <TabsTrigger value="report-history" className="flex items-center space-x-2">
-                <Clock className="w-4 h-4" />
-                <span>Report History</span>
+              <TabsTrigger value="report-history" className="flex items-center justify-center space-x-1 md:space-x-2 text-xs md:text-sm px-2 py-3 col-span-1 md:col-span-1">
+                <Clock className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden lg:inline">Report History</span>
+                <span className="lg:hidden hidden sm:inline">R. History</span>
+                <span className="sm:hidden">History</span>
               </TabsTrigger>
-              <TabsTrigger value="medication-history" className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4" />
-                <span>Med History</span>
+              <TabsTrigger value="medication-history" className="flex items-center justify-center space-x-1 md:space-x-2 text-xs md:text-sm px-2 py-3 col-span-1 md:col-span-1">
+                <Calendar className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden lg:inline">Med History</span>
+                <span className="lg:hidden hidden sm:inline">M. History</span>
+                <span className="sm:hidden">Med</span>
               </TabsTrigger>
             </TabsList>
 
@@ -441,7 +447,7 @@ function DashboardContent() {
                         <PillIcon className="w-5 h-5 mr-2" />
                         Start Medication Chat
                       </Button>
-                      {medicationSessions.length > 0 && (
+                      {/* {medicationSessions.length > 0 && (
                         <Button 
                           variant="outline"
                           size="lg"
@@ -451,7 +457,7 @@ function DashboardContent() {
                           <History className="w-5 h-5 mr-2" />
                           History ({medicationSessions.length})
                         </Button>
-                      )}
+                      )} */}
                     </div>
                   </CardContent>
                 </Card>
@@ -534,54 +540,54 @@ function DashboardContent() {
             </TabsContent>
 
             {/* Report Analysis Chat Tab */}
-            <TabsContent value="report-chat" className="space-y-6">
-              <Card className="glass-effect border-0 h-[600px] flex flex-col">
-                <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 flex-shrink-0">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-blue-600 rounded-lg">
-                        <FileText className="h-5 w-5 text-white" />
+            <TabsContent value="report-chat" className="space-y-4 md:space-y-6">
+              <Card className="glass-effect border-0 h-[500px] md:h-[600px] flex flex-col">
+                <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 flex-shrink-0 p-3 md:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
+                    <div className="flex items-center space-x-2 md:space-x-3">
+                      <div className="p-1.5 md:p-2 bg-blue-600 rounded-lg">
+                        <FileText className="h-4 w-4 md:h-5 md:w-5 text-white" />
                       </div>
                       <div>
-                        <CardTitle className="text-xl">Medical Report Analysis</CardTitle>
-                        <CardDescription>
+                        <CardTitle className="text-lg md:text-xl">Medical Report Analysis</CardTitle>
+                        <CardDescription className="text-sm md:text-base">
                           AI assistant specialized in analyzing medical reports
                         </CardDescription>
                       </div>
                     </div>
                     {reportSessions.length > 1 && (
-                      <Button variant="outline" size="sm">
-                        <History className="w-4 h-4 mr-2" />
-                        History ({reportSessions.length})
+                      <Button variant="outline" size="sm" className="text-xs md:text-sm">
+                        <History className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                        <span className="hidden sm:inline">History</span> ({reportSessions.length})
                       </Button>
                     )}
                   </div>
                 </CardHeader>
                 
                 <CardContent className="flex-1 flex flex-col p-0 min-h-0">
-                  <ScrollArea className="flex-1 p-6">
+                  <ScrollArea className="flex-1 p-3 md:p-6">
                     {currentReportSession && getCurrentReportSession() ? (
-                      <div className="space-y-4">
+                      <div className="space-y-3 md:space-y-4">
                         {getCurrentReportSession()!.messages.map((message) => (
                             <div
                               key={message.id}
                               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
                             >
-                              <div className={`flex items-start space-x-3 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                                <div className={`p-2 rounded-full flex-shrink-0 ${message.role === 'user' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                              <div className={`flex items-start space-x-2 md:space-x-3 max-w-[90%] sm:max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                                <div className={`p-1.5 md:p-2 rounded-full flex-shrink-0 ${message.role === 'user' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'}`}>
                                   {message.role === 'user' ? (
-                                    <User className="h-4 w-4 text-white" />
+                                    <User className="h-3 w-3 md:h-4 md:w-4 text-white" />
                                   ) : (
-                                    <Bot className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                                    <Bot className="h-3 w-3 md:h-4 md:w-4 text-gray-600 dark:text-gray-300" />
                                   )}
                                 </div>
-                                <div className={`p-4 rounded-lg break-words ${
+                                <div className={`p-3 md:p-4 rounded-lg break-words text-sm md:text-base ${
                                   message.role === 'user' 
                                     ? 'bg-blue-600 text-white' 
                                     : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
                                 }`}>
                                   <p className="whitespace-pre-wrap break-words">{message.content}</p>
-                                  <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
+                                  <p className={`text-xs mt-1 md:mt-2 ${message.role === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
                                     {format(message.timestamp, 'HH:mm')}
                                   </p>
                                 </div>
@@ -590,14 +596,14 @@ function DashboardContent() {
                           ))}
                         {isSending && (
                           <div className="flex justify-start animate-fade-in">
-                            <div className="flex items-start space-x-3">
-                              <div className="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
-                                <Bot className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                            <div className="flex items-start space-x-2 md:space-x-3">
+                              <div className="p-1.5 md:p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                                <Bot className="h-3 w-3 md:h-4 md:w-4 text-gray-600 dark:text-gray-300" />
                               </div>
-                              <div className="p-4 rounded-lg bg-gray-100 dark:bg-gray-800">
+                              <div className="p-3 md:p-4 rounded-lg bg-gray-100 dark:bg-gray-800">
                                 <div className="flex items-center space-x-2">
-                                  <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-                                  <span className="text-gray-600 dark:text-gray-300">Analyzing...</span>
+                                  <Loader2 className="h-3 w-3 md:h-4 md:w-4 animate-spin text-blue-600" />
+                                  <span className="text-gray-600 dark:text-gray-300 text-sm md:text-base">Analyzing...</span>
                                 </div>
                               </div>
                             </div>
@@ -606,15 +612,15 @@ function DashboardContent() {
                         <div ref={messagesEndRef} />
                       </div>
                     ) : (
-                      <div className="flex items-center justify-center h-full text-center">
+                      <div className="flex items-center justify-center h-full text-center px-4">
                         <div>
-                          <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Start a new report analysis</h3>
-                          <p className="text-gray-600 dark:text-gray-400 mb-4">
+                          <FileText className="h-12 w-12 md:h-16 md:w-16 text-gray-300 mx-auto mb-3 md:mb-4" />
+                          <h3 className="text-base md:text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Start a new report analysis</h3>
+                          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4">
                             Upload a medical report or ask questions about your health data
                           </p>
-                          <Button onClick={handleStartReportAnalysis} className="bg-blue-600 hover:bg-blue-700">
-                            <Plus className="w-4 h-4 mr-2" />
+                          <Button onClick={handleStartReportAnalysis} className="bg-blue-600 hover:bg-blue-700 text-sm md:text-base">
+                            <Plus className="w-3 h-3 md:w-4 md:h-4 mr-2" />
                             New Analysis
                           </Button>
                         </div>
@@ -623,13 +629,13 @@ function DashboardContent() {
                   </ScrollArea>
                   
                   {currentReportSession && (
-                    <div className="border-t p-4 bg-gray-50 dark:bg-gray-800/50 flex-shrink-0">
-                      <div className="flex space-x-3">
+                    <div className="border-t p-3 md:p-4 bg-gray-50 dark:bg-gray-800/50 flex-shrink-0">
+                      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                         <Textarea
                           value={reportInput}
                           onChange={(e) => setReportInput(e.target.value)}
                           placeholder="Ask about your medical report, lab results, or upload a new document..."
-                          className="flex-1 min-h-[50px] resize-none"
+                          className="flex-1 min-h-[40px] md:min-h-[50px] resize-none text-sm md:text-base"
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                               e.preventDefault();
@@ -640,9 +646,11 @@ function DashboardContent() {
                         <Button 
                           onClick={handleSendReportMessage}
                           disabled={!reportInput.trim() || isSending}
-                          className="bg-blue-600 hover:bg-blue-700"
+                          className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+                          size="sm"
                         >
-                          <Send className="h-4 w-4" />
+                          <Send className="h-3 w-3 md:h-4 md:w-4 sm:mr-0 mr-2" />
+                          <span className="sm:hidden">Send</span>
                         </Button>
                       </div>
                     </div>
@@ -652,54 +660,54 @@ function DashboardContent() {
             </TabsContent>
 
             {/* Medication Chat Tab */}
-            <TabsContent value="medication-chat" className="space-y-6">
-              <Card className="glass-effect border-0 h-[600px] flex flex-col">
-                <CardHeader className="border-b bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 flex-shrink-0">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-green-600 rounded-lg">
-                        <PillIcon className="h-5 w-5 text-white" />
+            <TabsContent value="medication-chat" className="space-y-4 md:space-y-6">
+              <Card className="glass-effect border-0 h-[500px] md:h-[600px] flex flex-col">
+                <CardHeader className="border-b bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 flex-shrink-0 p-3 md:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
+                    <div className="flex items-center space-x-2 md:space-x-3">
+                      <div className="p-1.5 md:p-2 bg-green-600 rounded-lg">
+                        <PillIcon className="h-4 w-4 md:h-5 md:w-5 text-white" />
                       </div>
                       <div>
-                        <CardTitle className="text-xl">Medication Information</CardTitle>
-                        <CardDescription>
+                        <CardTitle className="text-lg md:text-xl">Medication Information</CardTitle>
+                        <CardDescription className="text-sm md:text-base">
                           Get medication info explained in simple, understandable terms
                         </CardDescription>
                       </div>
                     </div>
                     {medicationSessions.length > 1 && (
-                      <Button variant="outline" size="sm">
-                        <History className="w-4 h-4 mr-2" />
-                        History ({medicationSessions.length})
+                      <Button variant="outline" size="sm" className="text-xs md:text-sm">
+                        <History className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                        <span className="hidden sm:inline">History</span> ({medicationSessions.length})
                       </Button>
                     )}
                   </div>
                 </CardHeader>
                 
                 <CardContent className="flex-1 flex flex-col p-0 min-h-0">
-                  <ScrollArea className="flex-1 p-6">
+                  <ScrollArea className="flex-1 p-3 md:p-6">
                     {currentMedicationSession && getCurrentMedicationSession() ? (
-                      <div className="space-y-4">
+                      <div className="space-y-3 md:space-y-4">
                         {getCurrentMedicationSession()!.messages.map((message) => (
                             <div
                               key={message.id}
                               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
                             >
-                              <div className={`flex items-start space-x-3 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                                <div className={`p-2 rounded-full flex-shrink-0 ${message.role === 'user' ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                              <div className={`flex items-start space-x-2 md:space-x-3 max-w-[90%] sm:max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                                <div className={`p-1.5 md:p-2 rounded-full flex-shrink-0 ${message.role === 'user' ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-700'}`}>
                                   {message.role === 'user' ? (
-                                    <User className="h-4 w-4 text-white" />
+                                    <User className="h-3 w-3 md:h-4 md:w-4 text-white" />
                                   ) : (
-                                    <Bot className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                                    <Bot className="h-3 w-3 md:h-4 md:w-4 text-gray-600 dark:text-gray-300" />
                                   )}
                                 </div>
-                                <div className={`p-4 rounded-lg break-words ${
+                                <div className={`p-3 md:p-4 rounded-lg break-words text-sm md:text-base ${
                                   message.role === 'user' 
                                     ? 'bg-green-600 text-white' 
                                     : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
                                 }`}>
                                   <p className="whitespace-pre-wrap break-words">{message.content}</p>
-                                  <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-green-100' : 'text-gray-500'}`}>
+                                  <p className={`text-xs mt-1 md:mt-2 ${message.role === 'user' ? 'text-green-100' : 'text-gray-500'}`}>
                                     {format(message.timestamp, 'HH:mm')}
                                   </p>
                                 </div>
@@ -708,14 +716,14 @@ function DashboardContent() {
                           ))}
                         {isSending && (
                           <div className="flex justify-start animate-fade-in">
-                            <div className="flex items-start space-x-3">
-                              <div className="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
-                                <Bot className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                            <div className="flex items-start space-x-2 md:space-x-3">
+                              <div className="p-1.5 md:p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                                <Bot className="h-3 w-3 md:h-4 md:w-4 text-gray-600 dark:text-gray-300" />
                               </div>
-                              <div className="p-4 rounded-lg bg-gray-100 dark:bg-gray-800">
+                              <div className="p-3 md:p-4 rounded-lg bg-gray-100 dark:bg-gray-800">
                                 <div className="flex items-center space-x-2">
-                                  <Loader2 className="h-4 w-4 animate-spin text-green-600" />
-                                  <span className="text-gray-600 dark:text-gray-300">Researching medication...</span>
+                                  <Loader2 className="h-3 w-3 md:h-4 md:w-4 animate-spin text-green-600" />
+                                  <span className="text-gray-600 dark:text-gray-300 text-sm md:text-base">Researching medication...</span>
                                 </div>
                               </div>
                             </div>
@@ -724,15 +732,15 @@ function DashboardContent() {
                         <div ref={messagesEndRef} />
                       </div>
                     ) : (
-                      <div className="flex items-center justify-center h-full text-center">
+                      <div className="flex items-center justify-center h-full text-center px-4">
                         <div>
-                          <PillIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Ask about medications</h3>
-                          <p className="text-gray-600 dark:text-gray-400 mb-4">
+                          <PillIcon className="h-12 w-12 md:h-16 md:w-16 text-gray-300 mx-auto mb-3 md:mb-4" />
+                          <h3 className="text-base md:text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Ask about medications</h3>
+                          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4">
                             Get detailed information about any medication in simple, easy-to-understand language
                           </p>
-                          <Button onClick={handleStartMedicationCheck} className="bg-green-600 hover:bg-green-700">
-                            <Plus className="w-4 h-4 mr-2" />
+                          <Button onClick={handleStartMedicationCheck} className="bg-green-600 hover:bg-green-700 text-sm md:text-base">
+                            <Plus className="w-3 h-3 md:w-4 md:h-4 mr-2" />
                             New Consultation
                           </Button>
                         </div>
@@ -741,13 +749,13 @@ function DashboardContent() {
                   </ScrollArea>
                   
                   {currentMedicationSession && (
-                    <div className="border-t p-4 bg-gray-50 dark:bg-gray-800/50 flex-shrink-0">
-                      <div className="flex space-x-3">
+                    <div className="border-t p-3 md:p-4 bg-gray-50 dark:bg-gray-800/50 flex-shrink-0">
+                      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                         <Textarea
                           value={medInput}
                           onChange={(e) => setMedInput(e.target.value)}
                           placeholder="Ask about any medication: side effects, interactions, dosage, what to expect..."
-                          className="flex-1 min-h-[50px] resize-none"
+                          className="flex-1 min-h-[40px] md:min-h-[50px] resize-none text-sm md:text-base"
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                               e.preventDefault();
@@ -758,9 +766,11 @@ function DashboardContent() {
                         <Button 
                           onClick={handleSendMedMessage}
                           disabled={!medInput.trim() || isSending}
-                          className="bg-green-600 hover:bg-green-700"
+                          className="bg-green-600 hover:bg-green-700 w-full sm:w-auto"
+                          size="sm"
                         >
-                          <Send className="h-4 w-4" />
+                          <Send className="h-3 w-3 md:h-4 md:w-4 sm:mr-0 mr-2" />
+                          <span className="sm:hidden">Send</span>
                         </Button>
                       </div>
                     </div>

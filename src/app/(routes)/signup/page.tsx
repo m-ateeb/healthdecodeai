@@ -94,7 +94,7 @@ export default function Register() {
               <Brain className="absolute -top-1 -right-1 h-5 w-5 text-green-600" />
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-              HealthWise AI
+              HealthDecode AI
             </span>
           </Link>
         </div>
